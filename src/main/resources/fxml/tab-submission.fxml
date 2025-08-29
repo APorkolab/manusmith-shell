@@ -1,0 +1,13 @@
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.manusmith.shell.controller.SubmissionController" spacing="10" style="-fx-padding:12;">
+  <GridPane hgap="8" vgap="8">
+    <children>
+      <Label text="Market"/>
+      <TextField fx:id="tfMarket" GridPane.columnIndex="1"/>
+      <Label text="Genre" GridPane.rowIndex="1"/>
+      <TextField fx:id="tfGenre" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+      <Label text="SimSub" GridPane.rowIndex="2"/>
+      <CheckBox fx:id="cbSimSub" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    </children>
+  </GridPane>
+  <Button text="Generate Cover Letter (.txt)" onAction="#onGenerate"/>
+</VBox>

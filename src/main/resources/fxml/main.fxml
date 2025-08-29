@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.manusmith.shell.controller.MainController">
+  <top>
+    <ToolBar>
+      <Button text="Open…" onAction="#onOpen"/>
+      <Separator orientation="VERTICAL"/>
+      <CheckBox text="Italic → Underline" fx:id="cbItalicToUnderline"/>
+      <Region VBox.vgrow="ALWAYS"/>
+      <Button text="Preferences" onAction="#onPreferences"/>
+    </ToolBar>
+  </top>
+  <center>
+    <TabPane fx:id="tabs">
+      <tabs>
+        <Tab text="Convert" closable="false">
+          <content><fx:include source="tab-convert.fxml"/></content>
+        </Tab>
+        <Tab text="TypoFix" closable="false">
+          <content><fx:include source="tab-typofix.fxml"/></content>
+        </Tab>
+        <Tab text="Submission" closable="false">
+          <content><fx:include source="tab-submission.fxml"/></content>
+        </Tab>
+      </tabs>
+    </TabPane>
+  </center>
+  <bottom>
+    <HBox spacing="8.0" style="-fx-padding:6;">
+      <Label text="Status:"/>
+      <Label fx:id="lblStatus" text="Ready."/>
+    </HBox>
+  </bottom>
+</BorderPane>

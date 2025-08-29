@@ -1,47 +1,44 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.manusmith</groupId>
   <artifactId>typokit-shell</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>typokit-shell</name>
-  <description>Public UI for ManuSmith</description>
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <junit.version>5.11.0</junit.version>
     <javafx.version>22.0.2</javafx.version>
+    <junit.version>5.11.0</junit.version>
   </properties>
-
-  <!-- Ha később GitHub Packages/JitPack-on publikálod az engine-t,
-       itt add hozzá dependency-ként. Most önállóan fordul. -->
-
   <dependencies>
-    <!-- Tests -->
+    <!-- JavaFX dev-time; futtatásnál classifier kell (mac/win/linux) vagy javafx-maven-plugin -->
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-fxml</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <!-- (később) typokit-engine mint bináris dep -->
+    <!--
+    <dependency>
+      <groupId>org.manusmith</groupId>
+      <artifactId>typokit-engine</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- JavaFX példaként (platform-specifikus classifier kell futtatáshoz)
-         Fejlesztéskor elég a plugin, futtatásnál add hozzá:
-         mac-aarch64 | mac | win | linux
-    -->
-    <!--
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-controls</artifactId>
-      <version>${javafx.version}</version>
-      <classifier>mac-aarch64</classifier>
-    </dependency>
-    -->
   </dependencies>
-
   <build>
     <plugins>
       <!-- Surefire -->
@@ -51,35 +48,38 @@
         <version>3.5.0</version>
         <configuration><useModulePath>false</useModulePath></configuration>
       </plugin>
-
-      <!-- JavaFX futtatáshoz (fejlesztéskor hasznos) -->
-      <!--
+      <!-- JavaFX futtatáshoz (dev): mvn -Prun-javafx javafx:run -->
       <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
         <version>0.0.8</version>
         <configuration>
           <mainClass>org.manusmith.shell.MainApp</mainClass>
-          <javafxVersion>${javafx.version}</javafxVersion>
+          <launcher>ManuSmith</launcher>
         </configuration>
       </plugin>
-      -->
-
-      <!-- (Opcionális) jpackage a disztribúcióhoz
-      <plugin>
-        <groupId>org.panteleyev</groupId>
-        <artifactId>jpackage-maven-plugin</artifactId>
-        <version>1.9.0</version>
-        <configuration>
-          <name>ManuSmith</name>
-          <vendor>ManuSmith</vendor>
-          <mainClass>org.manusmith.shell.MainApp</mainClass>
-          <input>${project.build.directory}</input>
-          <destination>${project.build.directory}/dist</destination>
-          <type>app-image</type>
-        </configuration>
-      </plugin>
-      -->
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>run-javafx</id>
+      <properties>
+        <javafx.platform>linux</javafx.platform> <!-- cseréld win / linux szerint -->
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-controls</artifactId>
+          <version>${javafx.version}</version>
+          <classifier>${javafx.platform}</classifier>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-fxml</artifactId>
+          <version>${javafx.version}</version>
+          <classifier>${javafx.platform}</classifier>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>
