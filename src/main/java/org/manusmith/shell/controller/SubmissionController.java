@@ -6,6 +6,8 @@ import javafx.scene.control.TextField;
 import org.manusmith.shell.service.FileDialogs;
 import org.manusmith.shell.util.Fx;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,29 +28,38 @@ public class SubmissionController {
 
     @FXML
     private void onGenerate() {
-        String market = tfMarket.getText();
-        String genre = tfGenre.getText();
-        boolean isSimSub = cbSimSub.isSelected();
-
-        if (market == null || market.isBlank()) {
-            Fx.error("Validation Error", "Market field is required.");
-            return;
-        }
-
-        String coverLetter = generateCoverLetter(market, genre, isSimSub);
-
-        Optional<File> file = fileDialogs.showSaveTextDialog(tfMarket.getScene().getWindow(), market + " - Cover Letter.txt");
-        file.ifPresent(f -> {
-            try {
-                Files.writeString(f.toPath(), coverLetter);
-                Fx.alert("Success", "Cover letter saved to:\n" + f.getAbsolutePath());
-            } catch (IOException e) {
-                Fx.error("Save Error", "Failed to save file:\n" + e.getMessage());
-            }
+        generateCoverLetterText().ifPresent(coverLetter -> {
+            Optional<File> file = fileDialogs.showSaveTextDialog(tfMarket.getScene().getWindow(), tfMarket.getText() + " - Cover Letter.txt");
+            file.ifPresent(f -> {
+                try {
+                    Files.writeString(f.toPath(), coverLetter);
+                    Fx.alert("Success", "Cover letter saved to:\n" + f.getAbsolutePath());
+                } catch (IOException e) {
+                    Fx.error("Save Error", "Failed to save file:\n" + e.getMessage());
+                }
+            });
         });
     }
 
-    private String generateCoverLetter(String market, String genre, boolean isSimSub) {
+    @FXML
+    private void onCopyToClipboard() {
+        generateCoverLetterText().ifPresent(coverLetter -> {
+            StringSelection stringSelection = new StringSelection(coverLetter);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+            Fx.alert("Success", "Cover letter text copied to clipboard.");
+        });
+    }
+
+    private Optional<String> generateCoverLetterText() {
+        String market = tfMarket.getText();
+        if (market == null || market.isBlank()) {
+            Fx.error("Validation Error", "Market field is required.");
+            return Optional.empty();
+        }
+
+        String genre = tfGenre.getText();
+        boolean isSimSub = cbSimSub.isSelected();
+
         // This is a very basic template. In a real app, this would be more sophisticated.
         StringBuilder sb = new StringBuilder();
         sb.append("Dear editors at ").append(market).append(",\n\n");
@@ -60,9 +71,7 @@ public class SubmissionController {
         sb.append("Thank you for your time and consideration.\n\n");
         sb.append("Sincerely,\n");
         sb.append("[YOUR NAME]\n");
-        sb.append("[YOUR ADDRESS]\n");
-        sb.append("[YOUR EMAIL AND PHONE]");
 
-        return sb.toString();
+        return Optional.of(sb.toString());
     }
 }
