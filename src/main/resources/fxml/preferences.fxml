@@ -4,11 +4,18 @@
 <?import javafx.scene.control.Label?>
 
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.layout.HBox?>
 <VBox xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.manusmith.shell.controller.PreferencesController"
       spacing="10" style="-fx-padding: 20;">
     <children>
         <Label text="Preferences" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-        <CheckBox fx:id="cbAlwaysNormalize" text="Always normalize text in TypoFix using the default profile"/>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <children>
+                <CheckBox fx:id="cbAlwaysNormalize" text="Always normalize text in TypoFix using profile:"/>
+                <ChoiceBox fx:id="cbDefaultProfile"/>
+            </children>
+        </HBox>
     </children>
 </VBox>

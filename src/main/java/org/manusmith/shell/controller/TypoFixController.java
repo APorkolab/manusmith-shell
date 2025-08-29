@@ -86,7 +86,7 @@ public class TypoFixController {
 
         String profile;
         if (preferencesService.getAlwaysNormalize()) {
-            profile = "Shunn";
+            profile = preferencesService.getDefaultProfile();
             // Optionally, disable the choice box to make it clear why it's not being used
             cbProfile.setDisable(true);
             cbProfile.setValue(profile); // Visually reflect the profile being used
