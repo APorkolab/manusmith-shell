@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.manusmith.shell.service.EngineBridge;
+import org.manusmith.shell.service.PreferencesService;
+import org.manusmith.shell.util.Fx;
 
 import java.io.IOException;
 import java.net.URL;
@@ -13,26 +15,21 @@ import java.util.ResourceBundle;
 
 public class MainApp extends Application {
 
+    private static Stage primaryStage;
+
+    public static void reload() {
+        try {
+            primaryStage.setScene(loadScene());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Fx.error("Error", "Failed to reload the UI.");
+        }
+    }
+
     @Override
     public void start(Stage primaryStage) throws IOException {
-        // Load the resource bundle
-        ResourceBundle bundle = ResourceBundle.getBundle("i18n.messages", Locale.getDefault());
-
-        URL fxmlUrl = getClass().getResource("/fxml/main.fxml");
-        if (fxmlUrl == null) {
-            System.err.println("Cannot find main.fxml in resources. Check classpath.");
-            throw new IOException("Cannot find FXML file.");
-        }
-
-        FXMLLoader loader = new FXMLLoader(fxmlUrl, bundle);
-        Scene scene = new Scene(loader.load(), 800, 600);
-
-        primaryStage.setTitle(bundle.getString("app.title"));
-        primaryStage.setScene(scene);
-
-        // Apply the default theme
-        org.manusmith.shell.service.ThemeService.getInstance().applyCurrentTheme(scene);
-
+        MainApp.primaryStage = primaryStage;
+        primaryStage.setScene(loadScene());
         primaryStage.show();
 
         // Setup tray icon
@@ -47,6 +44,32 @@ public class MainApp extends Application {
             primaryStage.hide();
             event.consume(); // Consume the event to prevent the window from closing
         });
+    }
+
+    private static Scene loadScene() throws IOException {
+        // Load saved language or use default
+        PreferencesService preferencesService = new PreferencesService();
+        String langCode = preferencesService.getLanguage();
+        Locale locale = (langCode != null) ? new Locale(langCode) : Locale.getDefault();
+
+        // Load the resource bundle
+        ResourceBundle bundle = ResourceBundle.getBundle("i18n.messages", locale);
+
+        URL fxmlUrl = MainApp.class.getResource("/fxml/main.fxml");
+        if (fxmlUrl == null) {
+            System.err.println("Cannot find main.fxml in resources. Check classpath.");
+            throw new IOException("Cannot find FXML file.");
+        }
+
+        FXMLLoader loader = new FXMLLoader(fxmlUrl, bundle);
+        Scene scene = new Scene(loader.load(), 800, 600);
+
+        primaryStage.setTitle(bundle.getString("app.title"));
+
+        // Apply the default theme
+        org.manusmith.shell.service.ThemeService.getInstance().applyCurrentTheme(scene);
+
+        return scene;
     }
 
     public static void main(String[] args) {

@@ -7,7 +7,8 @@
       <Button text="%label.open" onAction="#onOpen"/>
       <Separator orientation="VERTICAL"/>
       <CheckBox text="%label.italicToUnderline" fx:id="cbItalicToUnderline"/>
-      <Region VBox.vgrow="ALWAYS"/>
+      <Region HBox.hgrow="ALWAYS"/>
+      <ChoiceBox fx:id="languageSelector"/>
       <Button text="%label.preferences" onAction="#onPreferences"/>
     </ToolBar>
   </top>

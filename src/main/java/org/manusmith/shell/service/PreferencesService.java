@@ -14,6 +14,7 @@ public class PreferencesService {
     private static final String EMAIL = "email";
     private static final String PHONE = "phone";
     private static final String TITLE = "title"; // Note: Title might not be ideal to save, but let's include it.
+    private static final String LANGUAGE = "language";
 
     public PreferencesService() {
         // Using a node specific to this application class
@@ -41,5 +42,17 @@ public class PreferencesService {
         }
         // Create an AuthorMeta object with empty title and words, as they are not saved.
         return new AuthorMeta(author, address, email, phone, "", "");
+    }
+
+    public void setLanguage(String langCode) {
+        if (langCode == null) {
+            prefs.remove(LANGUAGE);
+        } else {
+            prefs.put(LANGUAGE, langCode);
+        }
+    }
+
+    public String getLanguage() {
+        return prefs.get(LANGUAGE, null);
     }
 }
