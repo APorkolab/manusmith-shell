@@ -8,6 +8,7 @@ import org.manusmith.shell.dto.ConvertRequest;
 import org.manusmith.shell.dto.FormattingPrefs;
 import org.manusmith.shell.service.EngineBridge;
 import org.manusmith.shell.service.FileDialogs;
+import org.manusmith.shell.service.PreferencesService;
 import org.manusmith.shell.service.SharedDataService;
 import org.manusmith.shell.service.StatusService;
 import org.manusmith.shell.service.ValidationService;
@@ -20,7 +21,6 @@ import java.util.Optional;
 
 public class ConvertController {
 
-    // --- FXML Fields ---
     @FXML private TextField tfInput;
     @FXML private TextField tfOutput;
     @FXML private TextField tfAuthor;
@@ -30,16 +30,29 @@ public class ConvertController {
     @FXML private TextField tfTitle;
     @FXML private TextField tfWords;
 
-    // --- Services ---
     private FileDialogs fileDialogs;
     private EngineBridge engineBridge;
     private ValidationService validationService;
+    private PreferencesService preferencesService;
 
     @FXML
     public void initialize() {
         this.fileDialogs = new FileDialogs();
         this.engineBridge = new EngineBridge();
         this.validationService = new ValidationService();
+        this.preferencesService = new PreferencesService();
+        loadPreferences();
+    }
+
+    private void loadPreferences() {
+        AuthorMeta savedMeta = preferencesService.loadAuthorMeta();
+        if (savedMeta != null) {
+            tfAuthor.setText(savedMeta.author());
+            tfAddress.setText(savedMeta.address());
+            tfEmail.setText(savedMeta.email());
+            tfPhone.setText(savedMeta.phone());
+            StatusService.getInstance().updateStatus("Author data loaded from preferences.");
+        }
     }
 
     @FXML
@@ -49,7 +62,6 @@ public class ConvertController {
         file.ifPresent(f -> {
             tfInput.setText(f.getAbsolutePath());
             StatusService.getInstance().updateStatus("Input file selected: " + f.getName());
-            // Suggest an output file name based on the input
             if (Strings.isBlank(tfOutput.getText())) {
                 String outputName = f.getName().replaceFirst("[.][^.]+$", "") + " (Shunn).docx";
                 tfOutput.setText(new File(f.getParent(), outputName).getAbsolutePath());
@@ -75,7 +87,6 @@ public class ConvertController {
     private void onGenerate() {
         StatusService.getInstance().updateStatus("Generating...");
 
-        // --- 1. Gather Data ---
         File inputFile = new File(tfInput.getText());
         File outputFile = new File(tfOutput.getText());
 
@@ -89,17 +100,12 @@ public class ConvertController {
         );
         SharedDataService.getInstance().setAuthorMeta(authorMeta);
 
-        // This is a bit of a hack. A cleaner way would be to use a shared model or dependency injection.
-        // For the MVP, this is acceptable. The ID "cbItalicToUnderline" is in main.fxml.
         CheckBox cbItalicToUnderline = (CheckBox) tfInput.getScene().lookup("#cbItalicToUnderline");
         boolean italicToUnderline = cbItalicToUnderline != null && cbItalicToUnderline.isSelected();
         FormattingPrefs formattingPrefs = new FormattingPrefs(italicToUnderline);
 
-
-        // --- 2. Create Request (DTO) ---
         ConvertRequest request = new ConvertRequest(inputFile, outputFile, authorMeta, formattingPrefs);
 
-        // --- 3. Validation ---
         List<String> errors = validationService.validate(request);
         if (!errors.isEmpty()) {
             Fx.error("Validation Error", String.join("\n", errors));
@@ -107,10 +113,10 @@ public class ConvertController {
             return;
         }
 
-        // --- 4. Call Engine ---
         StatusService.getInstance().updateStatus("Processing file: " + inputFile.getName());
         try {
             engineBridge.process(request);
+            preferencesService.saveAuthorMeta(authorMeta); // Save on success
             Fx.alert("Success", "File saved to:\n" + outputFile.getAbsolutePath());
             StatusService.getInstance().updateStatus("Successfully generated: " + outputFile.getName());
         } catch (Exception e) {
