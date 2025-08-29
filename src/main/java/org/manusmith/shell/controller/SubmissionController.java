@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import org.manusmith.shell.service.FileDialogs;
+import org.manusmith.shell.service.StatusService;
 import org.manusmith.shell.util.Fx;
 
 import java.awt.Toolkit;
@@ -28,13 +29,16 @@ public class SubmissionController {
 
     @FXML
     private void onGenerate() {
+        StatusService.getInstance().updateStatus("Generating cover letter...");
         generateCoverLetterText().ifPresent(coverLetter -> {
             Optional<File> file = fileDialogs.showSaveTextDialog(tfMarket.getScene().getWindow(), tfMarket.getText() + " - Cover Letter.txt");
             file.ifPresent(f -> {
                 try {
                     Files.writeString(f.toPath(), coverLetter);
+                    StatusService.getInstance().updateStatus("Cover letter saved successfully.");
                     Fx.alert("Success", "Cover letter saved to:\n" + f.getAbsolutePath());
                 } catch (IOException e) {
+                    StatusService.getInstance().updateStatus("Error saving cover letter.");
                     Fx.error("Save Error", "Failed to save file:\n" + e.getMessage());
                 }
             });
@@ -46,6 +50,7 @@ public class SubmissionController {
         generateCoverLetterText().ifPresent(coverLetter -> {
             StringSelection stringSelection = new StringSelection(coverLetter);
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+            StatusService.getInstance().updateStatus("Cover letter copied to clipboard.");
             Fx.alert("Success", "Cover letter text copied to clipboard.");
         });
     }
@@ -54,6 +59,7 @@ public class SubmissionController {
         String market = tfMarket.getText();
         if (market == null || market.isBlank()) {
             Fx.error("Validation Error", "Market field is required.");
+            StatusService.getInstance().updateStatus("Validation failed: Market is required.");
             return Optional.empty();
         }
 

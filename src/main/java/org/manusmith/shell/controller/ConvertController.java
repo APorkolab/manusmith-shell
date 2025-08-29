@@ -8,6 +8,7 @@ import org.manusmith.shell.dto.ConvertRequest;
 import org.manusmith.shell.dto.FormattingPrefs;
 import org.manusmith.shell.service.EngineBridge;
 import org.manusmith.shell.service.FileDialogs;
+import org.manusmith.shell.service.StatusService;
 import org.manusmith.shell.service.ValidationService;
 import org.manusmith.shell.util.Fx;
 import org.manusmith.shell.util.Strings;
@@ -42,9 +43,11 @@ public class ConvertController {
 
     @FXML
     private void onBrowseInput() {
+        StatusService.getInstance().updateStatus("Opening file browser for input...");
         Optional<File> file = fileDialogs.showOpenDocxDialog(tfInput.getScene().getWindow());
         file.ifPresent(f -> {
             tfInput.setText(f.getAbsolutePath());
+            StatusService.getInstance().updateStatus("Input file selected: " + f.getName());
             // Suggest an output file name based on the input
             if (Strings.isBlank(tfOutput.getText())) {
                 String outputName = f.getName().replaceFirst("[.][^.]+$", "") + " (Shunn).docx";
@@ -55,17 +58,21 @@ public class ConvertController {
 
     @FXML
     private void onBrowseOutput() {
+        StatusService.getInstance().updateStatus("Opening file browser for output...");
         String initialName = "output.docx";
         if (!Strings.isBlank(tfTitle.getText()) && !Strings.isBlank(tfAuthor.getText())) {
             initialName = tfAuthor.getText() + " - " + tfTitle.getText() + ".docx";
         }
         Optional<File> file = fileDialogs.showSaveDocxDialog(tfOutput.getScene().getWindow(), initialName);
-        file.ifPresent(f -> tfOutput.setText(f.getAbsolutePath()));
+        file.ifPresent(f -> {
+            tfOutput.setText(f.getAbsolutePath());
+            StatusService.getInstance().updateStatus("Output file location selected: " + f.getName());
+        });
     }
 
     @FXML
     private void onGenerate() {
-        System.out.println("Generate button clicked. Preparing request...");
+        StatusService.getInstance().updateStatus("Generating...");
 
         // --- 1. Gather Data ---
         File inputFile = new File(tfInput.getText());
@@ -94,19 +101,21 @@ public class ConvertController {
         List<String> errors = validationService.validate(request);
         if (!errors.isEmpty()) {
             Fx.error("Validation Error", String.join("\n", errors));
+            StatusService.getInstance().updateStatus("Validation failed.");
             return;
         }
 
         // --- 4. Call Engine ---
-        System.out.println("Calling engine with request: " + request);
+        StatusService.getInstance().updateStatus("Processing file: " + inputFile.getName());
         try {
             engineBridge.process(request);
-            System.out.println("Processing finished successfully.");
             Fx.alert("Success", "File saved to:\n" + outputFile.getAbsolutePath());
+            StatusService.getInstance().updateStatus("Successfully generated: " + outputFile.getName());
         } catch (Exception e) {
             System.err.println("An error occurred during processing: " + e.getMessage());
             e.printStackTrace();
             Fx.error("Error", "An unexpected error occurred:\n" + e.getMessage());
+            StatusService.getInstance().updateStatus("Error during generation.");
         }
     }
 }

@@ -5,15 +5,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
 import org.manusmith.shell.service.EngineBridge;
 import org.manusmith.shell.service.FileDialogs;
+import org.manusmith.shell.service.StatusService;
+import org.manusmith.shell.util.Fx;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
-import javafx.stage.FileChooser;
 
 public class TypoFixController {
 
@@ -41,6 +42,7 @@ public class TypoFixController {
 
     @FXML
     private void onBrowse() {
+        StatusService.getInstance().updateStatus("Opening file browser for TypoFix...");
         Optional<File> file = fileDialogs.showOpenTextDialog(tfFile.getScene().getWindow());
         file.ifPresent(this::loadFile);
     }
@@ -51,9 +53,10 @@ public class TypoFixController {
             taOriginal.setText(content);
             tfFile.setText(file.getAbsolutePath());
             this.currentFile = file;
+            StatusService.getInstance().updateStatus("File loaded: " + file.getName());
         } catch (IOException e) {
-            System.err.println("Failed to read file: " + e.getMessage());
-            // In a real app, show an alert to the user.
+            StatusService.getInstance().updateStatus("Error loading file: " + e.getMessage());
+            Fx.error("File Read Error", "Failed to read file: " + e.getMessage());
         }
     }
 
@@ -63,8 +66,6 @@ public class TypoFixController {
             taPreview.clear();
             return;
         }
-        // In a real app, we'd pass the profile to the engine.
-        // String profile = cbProfile.getValue();
         String fixedText = engineBridge.cleanText(originalText);
         taPreview.setText(fixedText);
     }
@@ -72,13 +73,12 @@ public class TypoFixController {
     @FXML
     private void onApply() {
         if (currentFile == null) {
-            // In a real app, show an alert.
-            System.out.println("No file loaded to save.");
+            Fx.error("Error", "No file loaded to save.");
             return;
         }
         String previewText = taPreview.getText();
         if (previewText == null || previewText.isEmpty()) {
-            System.out.println("Nothing to save.");
+            Fx.alert("Info", "There is no fixed text to save.");
             return;
         }
 
@@ -89,11 +89,14 @@ public class TypoFixController {
 
         File outputFile = fileChooser.showSaveDialog(tfFile.getScene().getWindow());
         if (outputFile != null) {
+            StatusService.getInstance().updateStatus("Saving file: " + outputFile.getName());
             try {
                 Files.writeString(outputFile.toPath(), previewText);
-                System.out.println("File saved successfully to " + outputFile.getAbsolutePath());
+                StatusService.getInstance().updateStatus("File saved successfully.");
+                Fx.alert("Success", "File saved to " + outputFile.getAbsolutePath());
             } catch (IOException e) {
-                System.err.println("Failed to save file: " + e.getMessage());
+                StatusService.getInstance().updateStatus("Error saving file: " + e.getMessage());
+                Fx.error("Save Error", "Failed to save file: " + e.getMessage());
             }
         }
     }
