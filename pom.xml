@@ -64,7 +64,12 @@
     <profile>
       <id>run-javafx</id>
       <properties>
-        <javafx.platform>linux</javafx.platform> <!-- cseréld win / linux szerint -->
+        <!--
+          Set this property to your current platform.
+          Common values: linux, win, mac-aarch64
+          Run with: mvn -Prun-javafx javafx:run
+        -->
+        <javafx.platform>linux</javafx.platform>
       </properties>
       <dependencies>
         <dependency>

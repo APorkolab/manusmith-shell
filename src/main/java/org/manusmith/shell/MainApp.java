@@ -1,9 +1,11 @@
 package org.manusmith.shell;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.manusmith.shell.service.EngineBridge;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,6 +26,19 @@ public class MainApp extends Application {
         primaryStage.setTitle("ManuSmith Shell");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        // Setup tray icon
+        // The engine bridge could be a singleton or managed by a DI framework later.
+        // For now, we create it here and pass it where needed.
+        EngineBridge engineBridge = new EngineBridge();
+        TrayIntegration tray = new TrayIntegration(primaryStage, engineBridge);
+        tray.setupTray();
+
+        // Handle window close to hide to tray
+        primaryStage.setOnCloseRequest(event -> {
+            primaryStage.hide();
+            event.consume(); // Consume the event to prevent the window from closing
+        });
     }
 
     public static void main(String[] args) {
