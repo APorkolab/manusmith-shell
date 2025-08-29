@@ -24,6 +24,14 @@
       <artifactId>javafx-fxml</artifactId>
       <version>${javafx.version}</version>
     </dependency>
+
+    <!-- Apache POI for reading .docx files -->
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>5.3.0</version>
+    </dependency>
+
     <!-- (később) typokit-engine mint bináris dep -->
     <!--
     <dependency>

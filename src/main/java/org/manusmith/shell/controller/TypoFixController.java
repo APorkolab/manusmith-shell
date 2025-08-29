@@ -6,6 +6,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import org.manusmith.shell.service.DocxReaderService;
 import org.manusmith.shell.service.EngineBridge;
 import org.manusmith.shell.service.FileDialogs;
 import org.manusmith.shell.service.StatusService;
@@ -25,17 +26,18 @@ public class TypoFixController {
 
     private FileDialogs fileDialogs;
     private EngineBridge engineBridge;
+    private DocxReaderService docxReaderService;
     private File currentFile;
 
     @FXML
     public void initialize() {
         this.fileDialogs = new FileDialogs();
         this.engineBridge = new EngineBridge();
+        this.docxReaderService = new DocxReaderService();
 
         cbProfile.setItems(FXCollections.observableArrayList("HU", "EN", "DE"));
         cbProfile.setValue("HU");
 
-        // Add listeners to auto-update the preview
         taOriginal.textProperty().addListener((obs, old, aNew) -> updatePreview());
         cbProfile.valueProperty().addListener((obs, old, aNew) -> updatePreview());
     }
@@ -49,7 +51,13 @@ public class TypoFixController {
 
     private void loadFile(File file) {
         try {
-            String content = Files.readString(file.toPath());
+            StatusService.getInstance().updateStatus("Loading file: " + file.getName());
+            String content;
+            if (file.getName().toLowerCase().endsWith(".docx")) {
+                content = docxReaderService.readText(file);
+            } else {
+                content = Files.readString(file.toPath());
+            }
             taOriginal.setText(content);
             tfFile.setText(file.getAbsolutePath());
             this.currentFile = file;

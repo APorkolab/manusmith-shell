@@ -30,9 +30,9 @@ public class FileDialogs {
 
     public Optional<File> showOpenTextDialog(Window owner) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Text File");
+        fileChooser.setTitle("Open Document");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Text Files", "*.txt", "*.md"),
+                new FileChooser.ExtensionFilter("Readable Documents", "*.txt", "*.md", "*.docx"),
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
         File file = fileChooser.showOpenDialog(owner);
