@@ -12,6 +12,7 @@ import org.manusmith.shell.util.Fx;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class MainController {
@@ -30,25 +31,33 @@ public class MainController {
         setupLanguageSelector();
     }
 
+    private static final Map<String, String> LANGUAGE_MAP = Map.of(
+            "English", "en",
+            "Magyar", "hu"
+    );
+
     private void setupLanguageSelector() {
-        languageSelector.getItems().addAll("English", "Magyar");
+        languageSelector.getItems().addAll(LANGUAGE_MAP.keySet());
         String savedLanguage = preferencesService.getLanguage();
-        if (savedLanguage != null) {
-            languageSelector.setValue(savedLanguage.equals("hu") ? "Magyar" : "English");
-        } else {
-            String defaultLanguage = Locale.getDefault().getLanguage();
-            languageSelector.setValue(defaultLanguage.equals("hu") ? "Magyar" : "English");
-        }
+        String currentLanguage = savedLanguage != null ? savedLanguage : Locale.getDefault().getLanguage();
+
+        // Find the display name for the current language code
+        String displayLanguage = LANGUAGE_MAP.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(currentLanguage))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse("English");
+        languageSelector.setValue(displayLanguage);
 
         languageSelector.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
+            if (newVal != null && !newVal.equals(oldVal)) {
                 changeLanguage(newVal);
             }
         });
     }
 
     private void changeLanguage(String language) {
-        String langCode = language.equals("Magyar") ? "hu" : "en";
+        String langCode = LANGUAGE_MAP.get(language);
         preferencesService.setLanguage(langCode);
         StatusService.getInstance().updateStatus("Language changed to: " + language + ".");
         org.manusmith.shell.MainApp.reload();

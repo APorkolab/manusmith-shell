@@ -80,7 +80,8 @@ public class TypoFixController {
             taPreview.clear();
             return;
         }
-        String fixedText = engineBridge.cleanText(originalText);
+        String profile = cbProfile.getValue();
+        String fixedText = engineBridge.cleanText(originalText, profile);
         taPreview.setText(fixedText);
     }
 
