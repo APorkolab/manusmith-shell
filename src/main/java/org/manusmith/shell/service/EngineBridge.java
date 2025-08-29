@@ -22,6 +22,8 @@ public class EngineBridge {
                 return text.toLowerCase();
             case "DE":
                 return new StringBuilder(text).reverse().toString();
+            case "Shunn":
+                return "--- SHUNN FORMAT MOCK ---\n" + text;
             default:
                 return text;
         }

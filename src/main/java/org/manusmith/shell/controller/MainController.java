@@ -71,7 +71,15 @@ public class MainController {
 
     @FXML
     private void onPreferences() {
-        // To be implemented
-        StatusService.getInstance().updateStatus("Preferences clicked.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/preferences.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Preferences");
+            stage.setScene(new Scene(loader.load()));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Fx.error("Error", "Could not open preferences window.");
+        }
     }
 }

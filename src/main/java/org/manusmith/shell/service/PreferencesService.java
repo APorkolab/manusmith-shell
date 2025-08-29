@@ -15,6 +15,7 @@ public class PreferencesService {
     private static final String PHONE = "phone";
     private static final String TITLE = "title"; // Note: Title might not be ideal to save, but let's include it.
     private static final String LANGUAGE = "language";
+    private static final String ALWAYS_NORMALIZE = "always_normalize";
 
     public PreferencesService() {
         // Using a node specific to this application class
@@ -54,5 +55,13 @@ public class PreferencesService {
 
     public String getLanguage() {
         return prefs.get(LANGUAGE, null);
+    }
+
+    public void setAlwaysNormalize(boolean alwaysNormalize) {
+        prefs.putBoolean(ALWAYS_NORMALIZE, alwaysNormalize);
+    }
+
+    public boolean getAlwaysNormalize() {
+        return prefs.getBoolean(ALWAYS_NORMALIZE, false);
     }
 }

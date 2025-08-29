@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<?import javafx.scene.control.CheckBox?>
+<VBox xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.manusmith.shell.controller.PreferencesController"
+      spacing="10" style="-fx-padding: 20;">
+    <children>
+        <Label text="Preferences" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        <CheckBox fx:id="cbAlwaysNormalize" text="Always normalize text in TypoFix using the default profile"/>
+    </children>
+</VBox>

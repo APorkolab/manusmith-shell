@@ -12,6 +12,7 @@ import javafx.stage.FileChooser;
 import org.manusmith.shell.service.DocxReaderService;
 import org.manusmith.shell.service.EngineBridge;
 import org.manusmith.shell.service.FileDialogs;
+import org.manusmith.shell.service.PreferencesService;
 import org.manusmith.shell.service.StatusService;
 import org.manusmith.shell.util.Fx;
 
@@ -32,6 +33,7 @@ public class TypoFixController {
     private FileDialogs fileDialogs;
     private EngineBridge engineBridge;
     private DocxReaderService docxReaderService;
+    private PreferencesService preferencesService;
     private File currentFile;
 
     @FXML
@@ -39,8 +41,9 @@ public class TypoFixController {
         this.fileDialogs = new FileDialogs();
         this.engineBridge = new EngineBridge();
         this.docxReaderService = new DocxReaderService();
+        this.preferencesService = new PreferencesService();
 
-        cbProfile.setItems(FXCollections.observableArrayList("HU", "EN", "DE"));
+        cbProfile.setItems(FXCollections.observableArrayList("HU", "EN", "DE", "Shunn"));
         cbProfile.setValue("HU");
 
         taOriginal.textProperty().addListener((obs, old, aNew) -> updatePreview());
@@ -80,7 +83,18 @@ public class TypoFixController {
             taPreview.clear();
             return;
         }
-        String profile = cbProfile.getValue();
+
+        String profile;
+        if (preferencesService.getAlwaysNormalize()) {
+            profile = "Shunn";
+            // Optionally, disable the choice box to make it clear why it's not being used
+            cbProfile.setDisable(true);
+            cbProfile.setValue(profile); // Visually reflect the profile being used
+        } else {
+            cbProfile.setDisable(false);
+            profile = cbProfile.getValue();
+        }
+
         String fixedText = engineBridge.cleanText(originalText, profile);
         taPreview.setText(fixedText);
     }
