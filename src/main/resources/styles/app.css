@@ -1,0 +1,25 @@
+/* Base styles for the application (Light Theme) */
+
+.root {
+    -fx-font-size: 14px;
+    -fx-base: #ECEFF1; /* Light gray base color */
+    -fx-background: white;
+    -fx-text-background-color: white;
+    -fx-control-inner-background: -fx-text-background-color;
+}
+
+.button {
+    -fx-background-color: #4CAF50; /* Green */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+}
+
+.titled-pane > .title {
+    -fx-background-color: -fx-base;
+    -fx-border-color: #B0BEC5;
+    -fx-border-width: 0 0 1 0;
+}

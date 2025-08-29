@@ -1,0 +1,48 @@
+/* Dark Theme for the application */
+
+.root {
+    -fx-base: #263238; /* Dark blue-gray base */
+    -fx-background: #37474F; /* Darker background */
+    -fx-control-inner-background: #455A64;
+    -fx-text-background-color: -fx-control-inner-background;
+    -fx-text-fill: #ECEFF1; /* Light text */
+}
+
+.label {
+    -fx-text-fill: #ECEFF1;
+}
+
+.button {
+    -fx-background-color: #009688; /* Teal */
+    -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-background-color: #00796B;
+}
+
+.text-field {
+    -fx-text-fill: #ECEFF1;
+}
+
+.titled-pane > .title {
+    -fx-background-color: -fx-base;
+    -fx-text-fill: white;
+    -fx-border-color: #263238;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #263238;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #37474F;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: -fx-base;
+}
+
+.split-pane {
+    -fx-background-color: #37474F;
+}

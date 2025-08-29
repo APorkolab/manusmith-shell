@@ -25,6 +25,10 @@ public class MainApp extends Application {
 
         primaryStage.setTitle("ManuSmith Shell");
         primaryStage.setScene(scene);
+
+        // Apply the default theme
+        org.manusmith.shell.service.ThemeService.getInstance().applyCurrentTheme(scene);
+
         primaryStage.show();
 
         // Setup tray icon
