@@ -1,0 +1,12 @@
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.manusmith.shell.controller.TypoFixController" spacing="10" style="-fx-padding:12;">
+  <HBox spacing="8">
+    <TextField fx:id="tfFile" promptText="Select file" HBox.hgrow="ALWAYS" editable="false"/>
+    <Button text="Browse…" onAction="#onBrowse"/>
+    <ChoiceBox fx:id="cbProfile"/> <!-- HU / EN / DE -->
+  </HBox>
+  <SplitPane VBox.vgrow="ALWAYS">
+    <TextArea fx:id="taOriginal" promptText="Original text..."/>
+    <TextArea fx:id="taPreview" promptText="Preview of fixed text..." editable="false"/>
+  </SplitPane>
+  <Button text="Apply & Save…" onAction="#onApply" maxWidth="Infinity"/>
+</VBox>

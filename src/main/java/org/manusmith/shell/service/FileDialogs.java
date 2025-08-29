@@ -27,4 +27,15 @@ public class FileDialogs {
         File file = fileChooser.showSaveDialog(owner);
         return Optional.ofNullable(file);
     }
+
+    public Optional<File> showOpenTextDialog(Window owner) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Text File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Text Files", "*.txt", "*.md"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+        File file = fileChooser.showOpenDialog(owner);
+        return Optional.ofNullable(file);
+    }
 }
