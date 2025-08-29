@@ -1,10 +1,13 @@
 package org.manusmith.shell.controller;
 
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.manusmith.shell.service.DocxReaderService;
 import org.manusmith.shell.service.EngineBridge;
@@ -19,6 +22,8 @@ import java.util.Optional;
 
 public class TypoFixController {
 
+    @FXML private VBox contentBox;
+    @FXML private ProgressIndicator progressIndicator;
     @FXML private TextField tfFile;
     @FXML private ChoiceBox<String> cbProfile;
     @FXML private TextArea taOriginal;
@@ -50,6 +55,7 @@ public class TypoFixController {
     }
 
     private void loadFile(File file) {
+        // This could also be a task if files are very large
         try {
             StatusService.getInstance().updateStatus("Loading file: " + file.getName());
             String content;
@@ -96,16 +102,33 @@ public class TypoFixController {
         fileChooser.setInitialFileName(currentFile.getName().replaceFirst("[.][^.]+$", "") + "_fixed.txt");
 
         File outputFile = fileChooser.showSaveDialog(tfFile.getScene().getWindow());
-        if (outputFile != null) {
-            StatusService.getInstance().updateStatus("Saving file: " + outputFile.getName());
-            try {
-                Files.writeString(outputFile.toPath(), previewText);
-                StatusService.getInstance().updateStatus("File saved successfully.");
-                Fx.alert("Success", "File saved to " + outputFile.getAbsolutePath());
-            } catch (IOException e) {
-                StatusService.getInstance().updateStatus("Error saving file: " + e.getMessage());
-                Fx.error("Save Error", "Failed to save file: " + e.getMessage());
-            }
+        if (outputFile == null) {
+            return; // User cancelled
         }
+
+        Task<Void> saveTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                StatusService.getInstance().updateStatus("Saving file: " + outputFile.getName());
+                Files.writeString(outputFile.toPath(), previewText);
+                return null;
+            }
+        };
+
+        saveTask.setOnSucceeded(e -> {
+            StatusService.getInstance().updateStatus("File saved successfully.");
+            Fx.alert("Success", "File saved to " + outputFile.getAbsolutePath());
+        });
+
+        saveTask.setOnFailed(e -> {
+            Throwable ex = saveTask.getException();
+            StatusService.getInstance().updateStatus("Error saving file: " + ex.getMessage());
+            Fx.error("Save Error", "Failed to save file: " + ex.getMessage());
+        });
+
+        progressIndicator.visibleProperty().bind(saveTask.runningProperty());
+        contentBox.disableProperty().bind(saveTask.runningProperty());
+
+        new Thread(saveTask).start();
     }
 }

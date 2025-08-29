@@ -1,6 +1,9 @@
 package org.manusmith.shell.controller;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -13,10 +16,13 @@ import java.util.List;
 
 public class QuickConvertController {
 
-    @FXML
-    private StackPane dropZone;
+    @FXML private StackPane dropZone;
+    @FXML private Label dropLabel;
+    @FXML private ProgressIndicator progressIndicator;
 
     private EngineBridge engineBridge;
+    private static final String IDLE_STYLE = "-fx-border-color: #a0a0a0; -fx-border-style: dashed; -fx-background-color: #f8f8f8;";
+    private static final String HOVER_STYLE = "-fx-border-color: #009688; -fx-border-style: dashed; -fx-background-color: #e0f2f1;";
 
     @FXML
     public void initialize() {
@@ -27,11 +33,10 @@ public class QuickConvertController {
     private void setupDragAndDrop() {
         dropZone.setOnDragOver(this::handleDragOver);
         dropZone.setOnDragDropped(this::handleDragDropped);
-        dropZone.setOnDragEntered(event -> dropZone.setStyle("-fx-border-color: #009688; -fx-border-style: dashed; -fx-background-color: #e0f2f1;"));
-        dropZone.setOnDragExited(event -> dropZone.setStyle("-fx-border-color: #a0a0a0; -fx-border-style: dashed; -fx-background-color: #f8f8f8;"));
+        dropZone.setOnDragEntered(event -> dropZone.setStyle(HOVER_STYLE));
+        dropZone.setOnDragExited(event -> dropZone.setStyle(IDLE_STYLE));
     }
 
-    @FXML
     private void handleDragOver(DragEvent event) {
         if (event.getGestureSource() != dropZone && event.getDragboard().hasFiles()) {
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
@@ -39,7 +44,6 @@ public class QuickConvertController {
         event.consume();
     }
 
-    @FXML
     private void handleDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
         boolean success = false;
@@ -55,24 +59,45 @@ public class QuickConvertController {
     }
 
     private void processFiles(List<File> files) {
-        StatusService.getInstance().updateStatus("Processing " + files.size() + " file(s)...");
-        for (File file : files) {
-            try {
-                File outDir = new File(file.getParentFile(), "out");
-                if (!outDir.exists()) {
-                    outDir.mkdirs();
+        Task<Integer> conversionTask = new Task<>() {
+            @Override
+            protected Integer call() throws Exception {
+                int processedCount = 0;
+                for (int i = 0; i < files.size(); i++) {
+                    File file = files.get(i);
+                    updateMessage("Processing " + file.getName() + " (" + (i + 1) + "/" + files.size() + ")");
+
+                    File outDir = new File(file.getParentFile(), "out");
+                    if (!outDir.exists()) {
+                        outDir.mkdirs();
+                    }
+                    String outputFileName = file.getName().replaceFirst("[.][^.]+$", "") + "_converted.docx";
+                    File outputFile = new File(outDir, outputFileName);
+
+                    engineBridge.quickConvert(file, outputFile);
+                    processedCount++;
                 }
-                String outputFileName = file.getName().replaceFirst("[.][^.]+$", "") + "_converted.docx";
-                File outputFile = new File(outDir, outputFileName);
-
-                engineBridge.quickConvert(file, outputFile);
-
-            } catch (Exception e) {
-                StatusService.getInstance().updateStatus("Failed to convert " + file.getName() + ": " + e.getMessage());
-                // In a real app, show an error alert.
-                System.err.println("Error converting file: " + e.getMessage());
+                return processedCount;
             }
-        }
-        StatusService.getInstance().updateStatus("Quick Convert finished. Check the 'out' folder.");
+        };
+
+        conversionTask.setOnSucceeded(e -> {
+            int count = conversionTask.getValue();
+            StatusService.getInstance().updateStatus("Quick Convert finished. " + count + " file(s) processed.");
+        });
+
+        conversionTask.setOnFailed(e -> {
+            Throwable ex = conversionTask.getException();
+            StatusService.getInstance().updateStatus("Quick Convert failed: " + ex.getMessage());
+            System.err.println("Error during Quick Convert: " + ex.getMessage());
+            ex.printStackTrace();
+        });
+
+        StatusService.getInstance().statusProperty().bind(conversionTask.messageProperty());
+        progressIndicator.visibleProperty().bind(conversionTask.runningProperty());
+        dropLabel.visibleProperty().bind(conversionTask.runningProperty().not());
+        dropZone.disableProperty().bind(conversionTask.runningProperty());
+
+        new Thread(conversionTask).start();
     }
 }

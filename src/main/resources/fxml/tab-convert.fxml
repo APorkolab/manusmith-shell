@@ -1,38 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.manusmith.shell.controller.ConvertController" spacing="10" style="-fx-padding:12;">
-  <HBox spacing="8">
-    <TextField fx:id="tfInput" promptText="Input .docx path" HBox.hgrow="ALWAYS"/>
-    <Button text="Browse…" onAction="#onBrowseInput"/>
-  </HBox>
-  <TitledPane text="Author metadata" expanded="true">
-    <content>
-      <GridPane hgap="8" vgap="8" style="-fx-padding:8;">
-        <columnConstraints>
-          <ColumnConstraints percentWidth="25"/>
-          <ColumnConstraints percentWidth="75"/>
-        </columnConstraints>
-        <children>
-          <Label text="Author:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-          <TextField fx:id="tfAuthor" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-          <Label text="Address:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-          <TextField fx:id="tfAddress" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-          <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-          <TextField fx:id="tfEmail" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-          <Label text="Phone:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-          <TextField fx:id="tfPhone" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-          <Label text="Title:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-          <TextField fx:id="tfTitle" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-          <Label text="Words (auto):" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-          <TextField fx:id="tfWords" editable="false" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-        </children>
-      </GridPane>
-    </content>
-  </TitledPane>
-  <HBox spacing="8">
-    <TextField fx:id="tfOutput" promptText="Output .docx path" HBox.hgrow="ALWAYS"/>
-    <Button text="Save as…" onAction="#onBrowseOutput"/>
-  </HBox>
-  <Button text="Generate Shunn .docx" onAction="#onGenerate" maxWidth="Infinity"/>
-</VBox>
+
+<StackPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.manusmith.shell.controller.ConvertController">
+    <children>
+        <VBox fx:id="contentBox" spacing="10" style="-fx-padding:12;">
+            <HBox spacing="8">
+                <TextField fx:id="tfInput" promptText="Input .docx path" HBox.hgrow="ALWAYS"/>
+                <Button text="Browse…" onAction="#onBrowseInput"/>
+            </HBox>
+            <TitledPane text="Author metadata" expanded="true">
+                <content>
+                    <GridPane hgap="8" vgap="8" style="-fx-padding:8;">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="25"/>
+                            <ColumnConstraints percentWidth="75"/>
+                        </columnConstraints>
+                        <children>
+                            <Label text="Author:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                            <TextField fx:id="tfAuthor" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                            <Label text="Address:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                            <TextField fx:id="tfAddress" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                            <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                            <TextField fx:id="tfEmail" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                            <Label text="Phone:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                            <TextField fx:id="tfPhone" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                            <Label text="Title:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                            <TextField fx:id="tfTitle" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                            <Label text="Words (auto):" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                            <TextField fx:id="tfWords" editable="false" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                        </children>
+                    </GridPane>
+                </content>
+            </TitledPane>
+            <HBox spacing="8">
+                <TextField fx:id="tfOutput" promptText="Output .docx path" HBox.hgrow="ALWAYS"/>
+                <Button text="Save as…" onAction="#onBrowseOutput"/>
+            </HBox>
+            <Button text="Generate Shunn .docx" onAction="#onGenerate" maxWidth="Infinity"/>
+        </VBox>
+        <ProgressIndicator fx:id="progressIndicator" visible="false" maxWidth="60" maxHeight="60"/>
+    </children>
+</StackPane>

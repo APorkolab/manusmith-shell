@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
@@ -8,10 +9,11 @@
            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="org.manusmith.shell.controller.QuickConvertController">
     <children>
-        <Label text="Drop files here (.docx, .odt, .md, .txt)">
+        <Label fx:id="dropLabel" text="Drop files here (.docx, .odt, .md, .txt)">
             <font>
                 <Font size="18.0"/>
             </font>
         </Label>
+        <ProgressIndicator fx:id="progressIndicator" visible="false" maxWidth="60" maxHeight="60"/>
     </children>
 </StackPane>

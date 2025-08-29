@@ -1,8 +1,11 @@
 package org.manusmith.shell.controller;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import org.manusmith.shell.dto.AuthorMeta;
 import org.manusmith.shell.dto.ConvertRequest;
 import org.manusmith.shell.dto.FormattingPrefs;
@@ -20,6 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class ConvertController {
+
+    @FXML private VBox contentBox;
+    @FXML private ProgressIndicator progressIndicator;
 
     @FXML private TextField tfInput;
     @FXML private TextField tfOutput;
@@ -85,26 +91,18 @@ public class ConvertController {
 
     @FXML
     private void onGenerate() {
-        StatusService.getInstance().updateStatus("Generating...");
-
-        File inputFile = new File(tfInput.getText());
-        File outputFile = new File(tfOutput.getText());
-
         AuthorMeta authorMeta = new AuthorMeta(
-                tfAuthor.getText(),
-                tfAddress.getText(),
-                tfEmail.getText(),
-                tfPhone.getText(),
-                tfTitle.getText(),
-                tfWords.getText()
+                tfAuthor.getText(), tfAddress.getText(), tfEmail.getText(),
+                tfPhone.getText(), tfTitle.getText(), tfWords.getText()
         );
         SharedDataService.getInstance().setAuthorMeta(authorMeta);
 
         CheckBox cbItalicToUnderline = (CheckBox) tfInput.getScene().lookup("#cbItalicToUnderline");
-        boolean italicToUnderline = cbItalicToUnderline != null && cbItalicToUnderline.isSelected();
-        FormattingPrefs formattingPrefs = new FormattingPrefs(italicToUnderline);
+        FormattingPrefs formattingPrefs = new FormattingPrefs(cbItalicToUnderline != null && cbItalicToUnderline.isSelected());
 
-        ConvertRequest request = new ConvertRequest(inputFile, outputFile, authorMeta, formattingPrefs);
+        ConvertRequest request = new ConvertRequest(
+                new File(tfInput.getText()), new File(tfOutput.getText()), authorMeta, formattingPrefs
+        );
 
         List<String> errors = validationService.validate(request);
         if (!errors.isEmpty()) {
@@ -113,17 +111,32 @@ public class ConvertController {
             return;
         }
 
-        StatusService.getInstance().updateStatus("Processing file: " + inputFile.getName());
-        try {
-            engineBridge.process(request);
+        Task<Void> generationTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                StatusService.getInstance().updateStatus("Processing file: " + request.inputFile().getName());
+                engineBridge.process(request);
+                return null;
+            }
+        };
+
+        generationTask.setOnSucceeded(e -> {
             preferencesService.saveAuthorMeta(authorMeta); // Save on success
-            Fx.alert("Success", "File saved to:\n" + outputFile.getAbsolutePath());
-            StatusService.getInstance().updateStatus("Successfully generated: " + outputFile.getName());
-        } catch (Exception e) {
-            System.err.println("An error occurred during processing: " + e.getMessage());
-            e.printStackTrace();
-            Fx.error("Error", "An unexpected error occurred:\n" + e.getMessage());
+            Fx.alert("Success", "File saved to:\n" + request.outputFile().getAbsolutePath());
+            StatusService.getInstance().updateStatus("Successfully generated: " + request.outputFile().getName());
+        });
+
+        generationTask.setOnFailed(e -> {
+            Throwable ex = generationTask.getException();
+            System.err.println("An error occurred during processing: " + ex.getMessage());
+            ex.printStackTrace();
+            Fx.error("Error", "An unexpected error occurred:\n" + ex.getMessage());
             StatusService.getInstance().updateStatus("Error during generation.");
-        }
+        });
+
+        progressIndicator.visibleProperty().bind(generationTask.runningProperty());
+        contentBox.disableProperty().bind(generationTask.runningProperty());
+
+        new Thread(generationTask).start();
     }
 }

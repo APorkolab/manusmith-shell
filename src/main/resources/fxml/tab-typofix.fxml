@@ -1,12 +1,24 @@
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.manusmith.shell.controller.TypoFixController" spacing="10" style="-fx-padding:12;">
-  <HBox spacing="8">
-    <TextField fx:id="tfFile" promptText="Select file" HBox.hgrow="ALWAYS" editable="false"/>
-    <Button text="Browse…" onAction="#onBrowse"/>
-    <ChoiceBox fx:id="cbProfile"/> <!-- HU / EN / DE -->
-  </HBox>
-  <SplitPane VBox.vgrow="ALWAYS">
-    <TextArea fx:id="taOriginal" promptText="Original text..."/>
-    <TextArea fx:id="taPreview" promptText="Preview of fixed text..." editable="false"/>
-  </SplitPane>
-  <Button text="Apply & Save…" onAction="#onApply" maxWidth="Infinity"/>
-</VBox>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.manusmith.shell.controller.TypoFixController">
+    <children>
+        <VBox fx:id="contentBox" spacing="10" style="-fx-padding:12;">
+            <HBox spacing="8">
+                <TextField fx:id="tfFile" promptText="Select file" HBox.hgrow="ALWAYS" editable="false"/>
+                <Button text="Browse…" onAction="#onBrowse"/>
+                <ChoiceBox fx:id="cbProfile"/> <!-- HU / EN / DE -->
+            </HBox>
+            <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.5">
+                <items>
+                    <TextArea fx:id="taOriginal" promptText="Original text..."/>
+                    <TextArea fx:id="taPreview" promptText="Preview of fixed text..." editable="false"/>
+                </items>
+            </SplitPane>
+            <Button text="Apply & Save…" onAction="#onApply" maxWidth="Infinity"/>
+        </VBox>
+        <ProgressIndicator fx:id="progressIndicator" visible="false" maxWidth="60" maxHeight="60"/>
+    </children>
+</StackPane>
