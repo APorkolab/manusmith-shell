@@ -14,4 +14,11 @@ public class EngineBridge {
         System.out.println("Simulating text cleaning for: " + text.substring(0, Math.min(text.length(), 50)) + "...");
         return text.trim().replaceAll("\\s+", " "); // Simple cleaning: trim and collapse whitespace
     }
+
+    public void quickConvert(java.io.File inputFile, java.io.File outputFile) throws java.io.IOException {
+        // In a real scenario, this would call the engine to do a complex conversion.
+        // For simulation, we'll just copy the file to the output location.
+        System.out.println("Simulating quick conversion from " + inputFile.getName() + " to " + outputFile.getName());
+        java.nio.file.Files.copy(inputFile.toPath(), outputFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+    }
 }

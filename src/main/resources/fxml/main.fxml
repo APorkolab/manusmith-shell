@@ -24,6 +24,9 @@
         <Tab text="Submission" closable="false">
           <content><fx:include source="tab-submission.fxml"/></content>
         </Tab>
+        <Tab text="Quick Convert" closable="false">
+          <content><fx:include source="tab-quickconvert.fxml"/></content>
+        </Tab>
       </tabs>
     </TabPane>
   </center>
