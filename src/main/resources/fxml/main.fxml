@@ -4,27 +4,27 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.manusmith.shell.controller.MainController">
   <top>
     <ToolBar>
-      <Button text="Open…" onAction="#onOpen"/>
+      <Button text="%label.open" onAction="#onOpen"/>
       <Separator orientation="VERTICAL"/>
-      <CheckBox text="Italic → Underline" fx:id="cbItalicToUnderline"/>
+      <CheckBox text="%label.italicToUnderline" fx:id="cbItalicToUnderline"/>
       <Region VBox.vgrow="ALWAYS"/>
-      <Button text="Preferences" onAction="#onPreferences"/>
+      <Button text="%label.preferences" onAction="#onPreferences"/>
     </ToolBar>
   </top>
   <center>
     <TabPane fx:id="tabs">
       <tabs>
-        <Tab text="Convert" closable="false">
+        <Tab text="%label.convert" closable="false">
           <content><fx:include source="tab-convert.fxml"/></content>
         </Tab>
         <!-- TypoFix and Submission tabs are placeholders for future features -->
-        <Tab text="TypoFix" closable="false">
+        <Tab text="%label.typofix" closable="false">
           <content><fx:include source="tab-typofix.fxml"/></content>
         </Tab>
-        <Tab text="Submission" closable="false">
+        <Tab text="%label.submission" closable="false">
           <content><fx:include source="tab-submission.fxml"/></content>
         </Tab>
-        <Tab text="Quick Convert" closable="false">
+        <Tab text="%label.quick_convert" closable="false">
           <content><fx:include source="tab-quickconvert.fxml"/></content>
         </Tab>
       </tabs>
@@ -32,8 +32,8 @@
   </center>
   <bottom>
     <HBox spacing="8.0" style="-fx-padding:6;">
-      <Label text="Status:"/>
-      <Label fx:id="lblStatus" text="Ready."/>
+      <Label text="%label.status"/>
+      <Label fx:id="lblStatus" text="%label.ready"/>
     </HBox>
   </bottom>
 </BorderPane>

@@ -9,7 +9,7 @@
            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="org.manusmith.shell.controller.QuickConvertController">
     <children>
-        <Label fx:id="dropLabel" text="Drop files here (.docx, .odt, .md, .txt)">
+        <Label fx:id="dropLabel" text="%label.drop_files">
             <font>
                 <Font size="18.0"/>
             </font>

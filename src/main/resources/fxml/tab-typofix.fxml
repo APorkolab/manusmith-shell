@@ -7,17 +7,17 @@
     <children>
         <VBox fx:id="contentBox" spacing="10" style="-fx-padding:12;">
             <HBox spacing="8">
-                <TextField fx:id="tfFile" promptText="Select file" HBox.hgrow="ALWAYS" editable="false"/>
-                <Button text="Browse…" onAction="#onBrowse"/>
+                <TextField fx:id="tfFile" promptText="%label.select_file" HBox.hgrow="ALWAYS" editable="false"/>
+                <Button text="%label.browse" onAction="#onBrowse"/>
                 <ChoiceBox fx:id="cbProfile"/> <!-- HU / EN / DE -->
             </HBox>
             <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.5">
                 <items>
-                    <TextArea fx:id="taOriginal" promptText="Original text..."/>
-                    <TextArea fx:id="taPreview" promptText="Preview of fixed text..." editable="false"/>
+                    <TextArea fx:id="taOriginal" promptText="%label.original_text"/>
+                    <TextArea fx:id="taPreview" promptText="%label.preview_text" editable="false"/>
                 </items>
             </SplitPane>
-            <Button text="Apply & Save…" onAction="#onApply" maxWidth="Infinity"/>
+            <Button text="%label.apply_and_save" onAction="#onApply" maxWidth="Infinity"/>
         </VBox>
         <ProgressIndicator fx:id="progressIndicator" visible="false" maxWidth="60" maxHeight="60"/>
     </children>

@@ -1,7 +1,6 @@
 package org.manusmith.shell;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -9,21 +8,26 @@ import org.manusmith.shell.service.EngineBridge;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        // Load the resource bundle
+        ResourceBundle bundle = ResourceBundle.getBundle("i18n.messages", Locale.getDefault());
+
         URL fxmlUrl = getClass().getResource("/fxml/main.fxml");
         if (fxmlUrl == null) {
             System.err.println("Cannot find main.fxml in resources. Check classpath.");
             throw new IOException("Cannot find FXML file.");
         }
 
-        FXMLLoader loader = new FXMLLoader(fxmlUrl);
+        FXMLLoader loader = new FXMLLoader(fxmlUrl, bundle);
         Scene scene = new Scene(loader.load(), 800, 600);
 
-        primaryStage.setTitle("ManuSmith Shell");
+        primaryStage.setTitle(bundle.getString("app.title"));
         primaryStage.setScene(scene);
 
         // Apply the default theme
