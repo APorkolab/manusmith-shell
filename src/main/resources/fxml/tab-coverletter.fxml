@@ -1,4 +1,4 @@
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.manusmith.shell.controller.SubmissionController" spacing="10" style="-fx-padding:12;">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.manusmith.shell.controller.CoverLetterController" spacing="10" style="-fx-padding:12;">
   <GridPane hgap="8" vgap="8">
     <children>
       <Label text="Market"/>

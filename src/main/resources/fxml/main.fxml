@@ -22,8 +22,8 @@
         <Tab text="%label.typofix" closable="false">
           <content><fx:include source="tab-typofix.fxml"/></content>
         </Tab>
-        <Tab text="%label.submission" closable="false">
-          <content><fx:include source="tab-submission.fxml"/></content>
+        <Tab text="%label.cover_letter" closable="false">
+          <content><fx:include source="tab-coverletter.fxml"/></content>
         </Tab>
         <Tab text="%label.quick_convert" closable="false">
           <content><fx:include source="tab-quickconvert.fxml"/></content>

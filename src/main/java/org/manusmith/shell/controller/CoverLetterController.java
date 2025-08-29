@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
-public class SubmissionController {
+public class CoverLetterController {
 
     @FXML private TextField tfMarket;
     @FXML private TextField tfGenre;
