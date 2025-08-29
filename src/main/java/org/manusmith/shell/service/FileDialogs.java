@@ -38,4 +38,13 @@ public class FileDialogs {
         File file = fileChooser.showOpenDialog(owner);
         return Optional.ofNullable(file);
     }
+
+    public Optional<File> showSaveTextDialog(Window owner, String initialFileName) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Cover Letter");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text File", "*.txt"));
+        fileChooser.setInitialFileName(initialFileName);
+        File file = fileChooser.showSaveDialog(owner);
+        return Optional.ofNullable(file);
+    }
 }
