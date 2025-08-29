@@ -8,6 +8,7 @@ import org.manusmith.shell.dto.ConvertRequest;
 import org.manusmith.shell.dto.FormattingPrefs;
 import org.manusmith.shell.service.EngineBridge;
 import org.manusmith.shell.service.FileDialogs;
+import org.manusmith.shell.service.SharedDataService;
 import org.manusmith.shell.service.StatusService;
 import org.manusmith.shell.service.ValidationService;
 import org.manusmith.shell.util.Fx;
@@ -86,6 +87,7 @@ public class ConvertController {
                 tfTitle.getText(),
                 tfWords.getText()
         );
+        SharedDataService.getInstance().setAuthorMeta(authorMeta);
 
         // This is a bit of a hack. A cleaner way would be to use a shared model or dependency injection.
         // For the MVP, this is acceptable. The ID "cbItalicToUnderline" is in main.fxml.

@@ -3,7 +3,9 @@ package org.manusmith.shell.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import org.manusmith.shell.dto.AuthorMeta;
 import org.manusmith.shell.service.FileDialogs;
+import org.manusmith.shell.service.SharedDataService;
 import org.manusmith.shell.service.StatusService;
 import org.manusmith.shell.util.Fx;
 
@@ -65,18 +67,23 @@ public class SubmissionController {
 
         String genre = tfGenre.getText();
         boolean isSimSub = cbSimSub.isSelected();
+        AuthorMeta meta = SharedDataService.getInstance().getAuthorMeta();
 
-        // This is a very basic template. In a real app, this would be more sophisticated.
+        String title = (meta != null && meta.title() != null) ? meta.title() : "[MANUSCRIPT TITLE]";
+        String wordCount = (meta != null && meta.words() != null) ? meta.words() : "[WORD COUNT]";
+        String authorName = (meta != null && meta.author() != null) ? meta.author() : "[YOUR NAME]";
+
+
         StringBuilder sb = new StringBuilder();
         sb.append("Dear editors at ").append(market).append(",\n\n");
-        sb.append("Please consider my manuscript, [MANUSCRIPT TITLE], for publication.\n\n");
-        sb.append("It is a ").append(genre.isBlank() ? "[genre]" : genre).append(" story of approximately [WORD COUNT] words.\n\n");
+        sb.append("Please consider my manuscript, \"").append(title).append("\", for publication.\n\n");
+        sb.append("It is a ").append(genre.isBlank() ? "[genre]" : genre).append(" story of approximately ").append(wordCount).append(" words.\n\n");
         if (isSimSub) {
             sb.append("This is a simultaneous submission.\n\n");
         }
         sb.append("Thank you for your time and consideration.\n\n");
         sb.append("Sincerely,\n");
-        sb.append("[YOUR NAME]\n");
+        sb.append(authorName).append("\n");
 
         return Optional.of(sb.toString());
     }
