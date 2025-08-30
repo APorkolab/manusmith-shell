@@ -114,7 +114,7 @@ public class TrayIntegration {
             if (contents != null && contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
                 String currentText = (String) contents.getTransferData(DataFlavor.stringFlavor);
                 if (currentText != null && !currentText.equals(lastClipboardText)) {
-                    String cleanedText = engineBridge.cleanText(currentText);
+                    String cleanedText = engineBridge.cleanText(currentText, null);
                     if (!cleanedText.equals(currentText)) {
                         lastClipboardText = cleanedText;
                         clipboard.setContents(new StringSelection(cleanedText), null);

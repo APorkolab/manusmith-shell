@@ -2,11 +2,14 @@ package org.manusmith.shell.service;
 
 import org.manusmith.shell.dto.ConvertRequest;
 
+import java.io.IOException;
+
 public class EngineBridge {
 
-    public void process(ConvertRequest request) {
-        // This will later call the actual typokit-engine
-        System.out.println("Simulating engine processing for: " + request);
+    private final DocxProcessingService docxProcessingService = new DocxProcessingService();
+
+    public void process(ConvertRequest request) throws IOException {
+        docxProcessingService.processDocument(request);
     }
 
     public String cleanText(String text, String profile) {

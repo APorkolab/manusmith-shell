@@ -35,6 +35,7 @@ public class ConvertController {
     @FXML private TextField tfPhone;
     @FXML private TextField tfTitle;
     @FXML private TextField tfWords;
+    @FXML private CheckBox cbItalicToUnderline;
 
     private FileDialogs fileDialogs;
     private EngineBridge engineBridge;
@@ -97,8 +98,7 @@ public class ConvertController {
         );
         SharedDataService.getInstance().setAuthorMeta(authorMeta);
 
-        CheckBox cbItalicToUnderline = (CheckBox) tfInput.getScene().lookup("#cbItalicToUnderline");
-        FormattingPrefs formattingPrefs = new FormattingPrefs(cbItalicToUnderline != null && cbItalicToUnderline.isSelected());
+        FormattingPrefs formattingPrefs = new FormattingPrefs(cbItalicToUnderline.isSelected());
 
         ConvertRequest request = new ConvertRequest(
                 new File(tfInput.getText()), new File(tfOutput.getText()), authorMeta, formattingPrefs

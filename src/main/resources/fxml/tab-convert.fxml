@@ -34,6 +34,15 @@
                     </GridPane>
                 </content>
             </TitledPane>
+            <TitledPane text="%label.formatting_options" expanded="true">
+                <content>
+                    <VBox style="-fx-padding: 8;">
+                        <children>
+                            <CheckBox fx:id="cbItalicToUnderline" text="%label.italicToUnderline"/>
+                        </children>
+                    </VBox>
+                </content>
+            </TitledPane>
             <HBox spacing="8">
                 <TextField fx:id="tfOutput" promptText="%label.output_docx_path" HBox.hgrow="ALWAYS"/>
                 <Button text="%label.save_as" onAction="#onBrowseOutput"/>
