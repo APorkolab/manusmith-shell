@@ -81,6 +81,8 @@ public class QuickConvertController {
                         outputFileName = baseName + "_converted.txt";
                     } else if (inputName.endsWith(".md")) {
                         outputFileName = baseName + "_converted.txt";
+                    } else if (inputName.endsWith(".odt")) {
+                        outputFileName = baseName + "_converted.txt";
                     } else {
                         System.err.println("Skipping unsupported file type: " + file.getName());
                         continue; // Skip this file
