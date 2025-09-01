@@ -13,29 +13,70 @@ public class EngineBridge {
     }
 
     public String cleanText(String text, String profile) {
-        // This will later call the actual typokit-engine's text cleaning functions
-        System.out.println("Simulating text cleaning for: " + text.substring(0, Math.min(text.length(), 50)) + "..." + " with profile: " + profile);
-        if (profile == null) {
+        if (text == null || profile == null) {
             return text;
         }
+
+        System.out.println("Cleaning text with profile: " + profile);
+
+        // General typography fixes
+        text = text.replaceAll("(?<=\\w)-{2,}(?=\\w)", "—"); // unspaced em-dash
+        text = text.replaceAll("(?<=\\s)-{2,}(?=\\s)", " — "); // spaced em-dash
+        text = text.replaceAll("\\.\\.\\.", "…");
+
+
         switch (profile) {
             case "HU":
-                return text.toUpperCase();
-            case "EN":
-                return text.toLowerCase();
+                // Hungarian: „low-high” quotes, »guillemets« for inner, spaced en-dash for thoughts
+                text = text.replaceAll(" \"([^\"]*)\"", " „$1”");
+                text = text.replaceAll(" '([^']*)'", " »$1«");
+                text = text.replaceAll(" — ", " – ");
+                break;
             case "DE":
-                return new StringBuilder(text).reverse().toString();
+                // German: „low-high“ quotes, ‚low-high‘ for inner, spaced en-dash for thoughts
+                text = text.replaceAll(" \"([^\"]*)\"", " „$1“");
+                text = text.replaceAll(" '([^']*)'", " ‚$1‘");
+                text = text.replaceAll(" — ", " – ");
+                break;
+            case "EN":
+                // English: “high-high” quotes, ‘high-high’ for inner, unspaced em-dash for breaks
+                text = text.replaceAll(" \"([^\"]*)\"", " “$1”");
+                text = text.replaceAll(" '([^']*)'", " ‘$1’");
+                text = text.replaceAll(" – ", "—");
+                break;
             case "Shunn":
-                return "--- SHUNN FORMAT MOCK ---\n" + text;
+                // Shunn manuscript format (text-level): standardize scene breaks
+                // Replace lines with *** or --- with a centered #
+                text = text.replaceAll("(?m)^\\s*\\*\\*\\*\\s*$", " # ");
+                text = text.replaceAll("(?m)^\\s*---\\s*$", " # ");
+                break;
             default:
+                // No profile or unknown profile, return original text
                 return text;
         }
+        return text;
     }
 
     public void quickConvert(java.io.File inputFile, java.io.File outputFile) throws java.io.IOException {
-        // In a real scenario, this would call the engine to do a complex conversion.
-        // For simulation, we'll just copy the file to the output location.
-        System.out.println("Simulating quick conversion from " + inputFile.getName() + " to " + outputFile.getName());
-        java.nio.file.Files.copy(inputFile.toPath(), outputFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        // This is a simplified implementation for .txt to .docx conversion.
+        // A real engine would handle multiple formats.
+        System.out.println("Converting " + inputFile.getName() + " to " + outputFile.getName());
+
+        if (!inputFile.getName().toLowerCase().endsWith(".txt")) {
+            throw new IOException("QuickConvert currently only supports .txt files.");
+        }
+
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(inputFile));
+             org.apache.poi.xwpf.usermodel.XWPFDocument document = new org.apache.poi.xwpf.usermodel.XWPFDocument()) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                document.createParagraph().createRun().setText(line);
+            }
+
+            try (java.io.FileOutputStream fos = new java.io.FileOutputStream(outputFile)) {
+                document.write(fos);
+            }
+        }
     }
 }
