@@ -71,7 +71,18 @@ public class QuickConvertController {
                     if (!outDir.exists()) {
                         outDir.mkdirs();
                     }
-                    String outputFileName = file.getName().replaceFirst("[.][^.]+$", "") + "_converted.docx";
+                    String inputName = file.getName().toLowerCase();
+                    String baseName = inputName.replaceFirst("[.][^.]+$", "");
+                    String outputFileName;
+
+                    if (inputName.endsWith(".txt")) {
+                        outputFileName = baseName + "_converted.docx";
+                    } else if (inputName.endsWith(".docx")) {
+                        outputFileName = baseName + "_converted.txt";
+                    } else {
+                        System.err.println("Skipping unsupported file type: " + file.getName());
+                        continue; // Skip this file
+                    }
                     File outputFile = new File(outDir, outputFileName);
 
                     engineBridge.quickConvert(file, outputFile);

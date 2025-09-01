@@ -58,25 +58,40 @@ public class EngineBridge {
     }
 
     public void quickConvert(java.io.File inputFile, java.io.File outputFile) throws java.io.IOException {
-        // This is a simplified implementation for .txt to .docx conversion.
-        // A real engine would handle multiple formats.
-        System.out.println("Converting " + inputFile.getName() + " to " + outputFile.getName());
+        String inputName = inputFile.getName().toLowerCase();
+        String outputName = outputFile.getName().toLowerCase();
 
-        if (!inputFile.getName().toLowerCase().endsWith(".txt")) {
-            throw new IOException("QuickConvert currently only supports .txt files.");
+        System.out.println("Quick Converting " + inputName + " to " + outputName);
+
+        if (inputName.endsWith(".txt") && outputName.endsWith(".docx")) {
+            convertTxtToDocx(inputFile, outputFile);
+        } else if (inputName.endsWith(".docx") && outputName.endsWith(".txt")) {
+            convertDocxToTxt(inputFile, outputFile);
+        } else {
+            throw new IOException("Unsupported conversion: from " + inputName + " to " + outputName);
         }
+    }
 
+    private void convertTxtToDocx(java.io.File inputFile, java.io.File outputFile) throws java.io.IOException {
         try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(inputFile));
              org.apache.poi.xwpf.usermodel.XWPFDocument document = new org.apache.poi.xwpf.usermodel.XWPFDocument()) {
-
             String line;
             while ((line = reader.readLine()) != null) {
                 document.createParagraph().createRun().setText(line);
             }
-
             try (java.io.FileOutputStream fos = new java.io.FileOutputStream(outputFile)) {
                 document.write(fos);
             }
+        }
+    }
+
+    private void convertDocxToTxt(java.io.File inputFile, java.io.File outputFile) throws java.io.IOException {
+        try (java.io.FileInputStream fis = new java.io.FileInputStream(inputFile);
+             org.apache.poi.xwpf.usermodel.XWPFDocument document = new org.apache.poi.xwpf.usermodel.XWPFDocument(fis);
+             java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.FileWriter(outputFile))) {
+
+            org.apache.poi.xwpf.extractor.XWPFWordExtractor extractor = new org.apache.poi.xwpf.extractor.XWPFWordExtractor(document);
+            writer.write(extractor.getText());
         }
     }
 }
