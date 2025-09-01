@@ -1,8 +1,17 @@
 package org.manusmith.shell.service;
 
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
+import com.vladsch.flexmark.util.io.IndependentCharSequence;
 import org.manusmith.shell.dto.ConvertRequest;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
 
 public class EngineBridge {
 
@@ -67,6 +76,8 @@ public class EngineBridge {
             convertTxtToDocx(inputFile, outputFile);
         } else if (inputName.endsWith(".docx") && outputName.endsWith(".txt")) {
             convertDocxToTxt(inputFile, outputFile);
+        } else if (inputName.endsWith(".md") && outputName.endsWith(".txt")) {
+            convertMdToTxt(inputFile, outputFile);
         } else {
             throw new IOException("Unsupported conversion: from " + inputName + " to " + outputName);
         }
@@ -93,5 +104,17 @@ public class EngineBridge {
             org.apache.poi.xwpf.extractor.XWPFWordExtractor extractor = new org.apache.poi.xwpf.extractor.XWPFWordExtractor(document);
             writer.write(extractor.getText());
         }
+    }
+
+    private void convertMdToTxt(java.io.File inputFile, java.io.File outputFile) throws java.io.IOException {
+        MutableDataSet options = new MutableDataSet();
+        Parser parser = Parser.builder(options).build();
+        com.vladsch.flexmark.util.ast.TextCollectingVisitor textVisitor = new com.vladsch.flexmark.util.ast.TextCollectingVisitor();
+
+        String markdownContent = Files.readString(inputFile.toPath());
+        Node document = parser.parse(markdownContent);
+        String plainText = textVisitor.collectAndGetText(document);
+
+        Files.writeString(outputFile.toPath(), plainText);
     }
 }

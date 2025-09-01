@@ -11,7 +11,7 @@ Kényelmes, egyszerű **UI/CLI**, ami elrejti az engine részleteit, és 1–2 k
 | **MVP** (Shunn formázás) |  Implementálva | Az `italic → underline` konverzió működik. |
 | **Cover Letter** | Implementálva | A kísérőlevél-generátor működik. |
 | **TypoKit** | Implementálva | Alapvető tipográfiai javítások (HU/DE/EN) és jelenettörés-normalizálás megvalósítva. |
-| **QuickConvert** | Részben implementálva | A `.txt` ↔ `.docx` oda-vissza konverzió működik. |
+| **QuickConvert** | Részben implementálva | A `.txt` ↔ `.docx` konverzió és `.md` → `.txt` konverzió működik. |
 | **CrossClip Lite** | Implementálva | Tálcaikon, téma váltó és vágólap-tisztító funkcióval. |
 
 ---
