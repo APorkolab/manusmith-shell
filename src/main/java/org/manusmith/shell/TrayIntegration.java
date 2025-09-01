@@ -114,7 +114,8 @@ public class TrayIntegration {
             if (contents != null && contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
                 String currentText = (String) contents.getTransferData(DataFlavor.stringFlavor);
                 if (currentText != null && !currentText.equals(lastClipboardText)) {
-                    String cleanedText = engineBridge.cleanText(currentText, null);
+                    // Use "EN" as a default, general-purpose cleaning profile for the tray feature.
+                    String cleanedText = engineBridge.cleanText(currentText, "EN");
                     if (!cleanedText.equals(currentText)) {
                         lastClipboardText = cleanedText;
                         clipboard.setContents(new StringSelection(cleanedText), null);

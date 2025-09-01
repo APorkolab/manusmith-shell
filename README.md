@@ -12,7 +12,7 @@ Kényelmes, egyszerű **UI/CLI**, ami elrejti az engine részleteit, és 1–2 k
 | **Cover Letter** | Implementálva | A kísérőlevél-generátor működik. |
 | **TypoKit** | Implementálva | Alapvető tipográfiai javítások (HU/DE/EN) és jelenettörés-normalizálás megvalósítva. |
 | **QuickConvert** | Részben implementálva | Csak `.txt` → `.docx` konverzió működik. |
-| **CrossClip Lite** | Nincs implementálva | Tervezett funkció. |
+| **CrossClip Lite** | Implementálva | Tálcaikon, téma váltó és vágólap-tisztító funkcióval. |
 
 ---
 
