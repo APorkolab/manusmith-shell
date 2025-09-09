@@ -1,0 +1,139 @@
+/* High Contrast Theme for Accessibility */
+
+/* Global high contrast settings */
+.root {
+    -fx-base: #000000;
+    -fx-background: #000000;
+    -fx-control-inner-background: #000000;
+    -fx-control-inner-background-alt: #1a1a1a;
+}
+
+/* Text colors */
+.text {
+    -fx-fill: #ffffff;
+}
+
+.label {
+    -fx-text-fill: #ffffff;
+}
+
+/* Button styles */
+.button {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #000000;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2px;
+}
+
+.button:hover {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: #000000;
+}
+
+.button:pressed {
+    -fx-background-color: #000000;
+    -fx-text-fill: #ffffff;
+}
+
+.button:focused {
+    -fx-border-color: #ffff00;
+    -fx-border-width: 3px;
+}
+
+/* Text input fields */
+.text-field, .text-area {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #000000;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2px;
+}
+
+.text-field:focused, .text-area:focused {
+    -fx-border-color: #ffff00;
+    -fx-border-width: 3px;
+}
+
+/* Tab pane */
+.tab-pane {
+    -fx-background-color: #000000;
+}
+
+.tab {
+    -fx-background-color: #333333;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1px;
+}
+
+.tab:selected {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #000000;
+}
+
+/* Menu styles */
+.menu-bar {
+    -fx-background-color: #000000;
+}
+
+.menu {
+    -fx-text-fill: #ffffff;
+}
+
+.menu:focused {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: #000000;
+}
+
+.menu-item {
+    -fx-background-color: #000000;
+    -fx-text-fill: #ffffff;
+}
+
+.menu-item:focused {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: #000000;
+}
+
+/* Progress indicators */
+.progress-indicator {
+    -fx-progress-color: #ffff00;
+}
+
+.progress-bar {
+    -fx-accent: #ffff00;
+}
+
+/* Scroll bars */
+.scroll-bar {
+    -fx-background-color: #333333;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #ffffff;
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #ffff00;
+}
+
+/* List and table views */
+.list-view {
+    -fx-background-color: #000000;
+    -fx-control-inner-background: #000000;
+}
+
+.list-cell {
+    -fx-background-color: #000000;
+    -fx-text-fill: #ffffff;
+}
+
+.list-cell:selected {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #000000;
+}
+
+/* Focus indicators */
+*:focused {
+    -fx-focus-color: #ffff00;
+    -fx-faint-focus-color: #ffff0044;
+}
