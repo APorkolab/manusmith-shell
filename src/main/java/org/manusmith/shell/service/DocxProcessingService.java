@@ -37,6 +37,28 @@ public class DocxProcessingService {
                         continue;
                     }
 
+                    // Copy properties BEFORE removing the run to avoid XML disconnect
+                    String fontFamily = null;
+                    try {
+                        fontFamily = run.getFontFamily();
+                    } catch (Exception e) {
+                        // Ignore if font family can't be retrieved
+                    }
+                    
+                    int fontSize = -1;
+                    try {
+                        fontSize = run.getFontSize();
+                    } catch (Exception e) {
+                        // Ignore if font size can't be retrieved
+                    }
+                    
+                    boolean isBold = false;
+                    try {
+                        isBold = run.isBold();
+                    } catch (Exception e) {
+                        // Ignore if bold status can't be retrieved
+                    }
+
                     // Remove the old run
                     p.removeRun(i);
 
@@ -46,11 +68,13 @@ public class DocxProcessingService {
                     newRun.setUnderline(UnderlinePatterns.SINGLE);
 
                     // Copy other properties
-                    newRun.setFontFamily(run.getFontFamily());
-                    if (run.getFontSize() != -1) {
-                       newRun.setFontSize(run.getFontSize());
+                    if (fontFamily != null) {
+                        newRun.setFontFamily(fontFamily);
                     }
-                    newRun.setBold(run.isBold());
+                    if (fontSize != -1) {
+                       newRun.setFontSize(fontSize);
+                    }
+                    newRun.setBold(isBold);
                     // Not setting italic, as we are replacing it.
                 }
             }

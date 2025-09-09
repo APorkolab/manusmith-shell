@@ -1,40 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.manusmith.shell.controller.MainController">
   <top>
-    <ToolBar>
-      <Button text="%label.open" onAction="#onOpen"/>
+    <ToolBar styleClass="tool-bar">
+      <Button text="%label.open" onAction="#onOpen" styleClass="flat"/>
       <Separator orientation="VERTICAL"/>
       <CheckBox text="%label.italicToUnderline" fx:id="cbItalicToUnderline"/>
       <Region HBox.hgrow="ALWAYS"/>
-      <ChoiceBox fx:id="languageSelector"/>
-      <Button text="%label.preferences" onAction="#onPreferences"/>
+      
+      <!-- Theme Toggle -->
+      <Button fx:id="btnThemeToggle" text="🌙" onAction="#onToggleTheme" styleClass="flat" 
+              minWidth="32" minHeight="32" maxWidth="32" maxHeight="32"/>
+      
+      <!-- Language Selector -->
+      <ChoiceBox fx:id="languageSelector" styleClass="choice-box"/>
+      
+      <!-- Preferences -->
+      <Button text="%label.preferences" onAction="#onPreferences" styleClass="flat"/>
     </ToolBar>
   </top>
+  
   <center>
-    <TabPane fx:id="tabs">
+    <TabPane fx:id="tabs" styleClass="tab-pane">
       <tabs>
         <Tab text="%label.convert" closable="false">
           <content><fx:include source="tab-convert.fxml"/></content>
         </Tab>
-        <!-- TypoFix and Submission tabs are placeholders for future features -->
-        <Tab text="%label.typofix" closable="false">
-          <content><fx:include source="tab-typofix.fxml"/></content>
-        </Tab>
-        <Tab text="%label.cover_letter" closable="false">
-          <content><fx:include source="tab-coverletter.fxml"/></content>
-        </Tab>
+        
         <Tab text="%label.quick_convert" closable="false">
           <content><fx:include source="tab-quickconvert.fxml"/></content>
+        </Tab>
+        
+        <!-- Future features -->
+        <Tab text="%label.typofix" closable="false" disable="true">
+          <content><fx:include source="tab-typofix.fxml"/></content>
+        </Tab>
+        
+        <Tab text="%label.cover_letter" closable="false" disable="true">
+          <content><fx:include source="tab-coverletter.fxml"/></content>
         </Tab>
       </tabs>
     </TabPane>
   </center>
+  
   <bottom>
-    <HBox spacing="8.0" style="-fx-padding:6;">
-      <Label text="%label.status"/>
-      <Label fx:id="lblStatus" text="%label.ready"/>
+    <HBox spacing="12" styleClass="status-bar" alignment="CENTER_LEFT">
+      <padding>
+        <Insets top="8" right="16" bottom="8" left="16"/>
+      </padding>
+      <children>
+        <Label text="%label.status" styleClass="caption"/>
+        <Label fx:id="lblStatus" text="%label.ready" styleClass="caption"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        
+        <!-- Status indicators -->
+        <Label fx:id="lblThemeIndicator" styleClass="caption"/>
+        <Separator orientation="VERTICAL"/>
+        <Label fx:id="lblVersionIndicator" text="v1.0.0" styleClass="caption"/>
+      </children>
     </HBox>
   </bottom>
 </BorderPane>

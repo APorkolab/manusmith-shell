@@ -1,54 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <StackPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.manusmith.shell.controller.ConvertController">
     <children>
-        <VBox fx:id="contentBox" spacing="10" style="-fx-padding:12;">
-            <HBox spacing="8">
-                <TextField fx:id="tfInput" promptText="%label.input_docx_path" HBox.hgrow="ALWAYS"/>
-                <Button text="%label.browse" onAction="#onBrowseInput"/>
-            </HBox>
-            <TitledPane text="%label.author_metadata" expanded="true">
-                <content>
-                    <GridPane hgap="8" vgap="8" style="-fx-padding:8;">
-                        <columnConstraints>
-                            <ColumnConstraints percentWidth="25"/>
-                            <ColumnConstraints percentWidth="75"/>
-                        </columnConstraints>
+        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="scroll-pane">
+            <content>
+                <VBox fx:id="contentBox" spacing="16" styleClass="card" style="-fx-padding: 24;">
+                    
+                    <!-- Drag and Drop Area -->
+                    <VBox fx:id="dragDropArea" styleClass="drag-drop-area" spacing="8" alignment="CENTER" minHeight="120">
                         <children>
-                            <Label text="%label.author" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                            <TextField fx:id="tfAuthor" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-                            <Label text="%label.address" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                            <TextField fx:id="tfAddress" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                            <Label text="%label.email" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                            <TextField fx:id="tfEmail" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                            <Label text="%label.phone" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                            <TextField fx:id="tfPhone" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-                            <Label text="%label.title" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                            <TextField fx:id="tfTitle" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-                            <Label text="%label.words_auto" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                            <TextField fx:id="tfWords" editable="false" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-                        </children>
-                    </GridPane>
-                </content>
-            </TitledPane>
-            <TitledPane text="%label.formatting_options" expanded="true">
-                <content>
-                    <VBox style="-fx-padding: 8;">
-                        <children>
-                            <CheckBox fx:id="cbItalicToUnderline" text="%label.italicToUnderline"/>
+                            <Label text="📄" style="-fx-font-size: 32px;"/>
+                            <Label text="%label.drag_drop_files" styleClass="title" textAlignment="CENTER"/>
+                            <Label text="%label.drag_drop_description" styleClass="subtitle" textAlignment="CENTER" wrapText="true"/>
                         </children>
                     </VBox>
-                </content>
-            </TitledPane>
-            <HBox spacing="8">
-                <TextField fx:id="tfOutput" promptText="%label.output_docx_path" HBox.hgrow="ALWAYS"/>
-                <Button text="%label.save_as" onAction="#onBrowseOutput"/>
-            </HBox>
-            <Button text="%label.generate_shunn_docx" onAction="#onGenerate" maxWidth="Infinity"/>
-        </VBox>
-        <ProgressIndicator fx:id="progressIndicator" visible="false" maxWidth="60" maxHeight="60"/>
+                    
+                    <!-- File Input Section -->
+                    <VBox spacing="8" styleClass="card">
+                        <children>
+                            <Label text="%label.input_file" styleClass="title"/>
+                            <HBox spacing="12" alignment="CENTER_LEFT">
+                                <children>
+                                    <TextField fx:id="tfInput" promptText="%label.input_docx_path" styleClass="outlined" HBox.hgrow="ALWAYS"/>
+                                    <Button text="%label.browse" onAction="#onBrowseInput" styleClass="flat"/>
+                                </children>
+                            </HBox>
+                        </children>
+                    </VBox>
+                    
+                    <!-- Author Metadata Section -->
+                    <VBox spacing="12" styleClass="card">
+                        <children>
+                            <Label text="%label.author_metadata" styleClass="title"/>
+                            <GridPane hgap="16" vgap="12">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="30" minWidth="120"/>
+                                    <ColumnConstraints percentWidth="70"/>
+                                </columnConstraints>
+                                <children>
+                                    <Label text="%label.author" styleClass="subtitle" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="tfAuthor" styleClass="outlined" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                                    
+                                    <Label text="%label.address" styleClass="subtitle" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="tfAddress" styleClass="outlined" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                                    
+                                    <Label text="%label.email" styleClass="subtitle" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="tfEmail" styleClass="outlined" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                                    
+                                    <Label text="%label.phone" styleClass="subtitle" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="tfPhone" styleClass="outlined" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                                    
+                                    <Label text="%label.title" styleClass="subtitle" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="tfTitle" styleClass="outlined" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                                    
+                                    <Label text="%label.words_auto" styleClass="subtitle" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="tfWords" editable="false" styleClass="outlined" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                                </children>
+                            </GridPane>
+                        </children>
+                    </VBox>
+                    
+                    <!-- Formatting Options Section -->
+                    <VBox spacing="12" styleClass="card">
+                        <children>
+                            <Label text="%label.formatting_options" styleClass="title"/>
+                            <VBox spacing="8">
+                                <children>
+                                    <CheckBox fx:id="cbItalicToUnderline" text="%label.italicToUnderline"/>
+                                    <!-- Add more formatting options here in the future -->
+                                </children>
+                            </VBox>
+                        </children>
+                    </VBox>
+                    
+                    <!-- Output Section -->
+                    <VBox spacing="8" styleClass="card">
+                        <children>
+                            <Label text="%label.output_file" styleClass="title"/>
+                            <HBox spacing="12" alignment="CENTER_LEFT">
+                                <children>
+                                    <TextField fx:id="tfOutput" promptText="%label.output_docx_path" styleClass="outlined" HBox.hgrow="ALWAYS"/>
+                                    <Button text="%label.save_as" onAction="#onBrowseOutput" styleClass="flat"/>
+                                </children>
+                            </HBox>
+                        </children>
+                    </VBox>
+                    
+                    <!-- Action Buttons -->
+                    <HBox spacing="12" alignment="CENTER">
+                        <children>
+                            <Button text="%label.generate_shunn_docx" onAction="#onGenerate" styleClass="primary" minWidth="200"/>
+                            <Button text="%label.preview" onAction="#onPreview" styleClass="flat" visible="false" managed="false"/>
+                        </children>
+                    </HBox>
+                    
+                </VBox>
+            </content>
+        </ScrollPane>
+        
+        <!-- Progress Overlay -->
+        <StackPane fx:id="progressOverlay" visible="false" style="-fx-background-color: rgba(0,0,0,0.3);">
+            <children>
+                <VBox alignment="CENTER" spacing="16" styleClass="card" maxWidth="200">
+                    <children>
+                        <ProgressIndicator fx:id="progressIndicator" maxWidth="60" maxHeight="60"/>
+                        <Label fx:id="progressLabel" text="%label.processing" styleClass="subtitle" textAlignment="CENTER"/>
+                    </children>
+                    <padding>
+                        <Insets top="24" right="24" bottom="24" left="24"/>
+                    </padding>
+                </VBox>
+            </children>
+        </StackPane>
+        
     </children>
 </StackPane>

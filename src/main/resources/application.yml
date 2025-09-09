@@ -1,0 +1,67 @@
+# ManuSmith Shell Application Configuration
+
+application:
+  name: ManuSmith Shell
+  version: 1.0.0-SNAPSHOT
+  description: Professional manuscript formatting and document processing application
+
+# UI Configuration
+ui:
+  theme:
+    default: light  # light, dark
+    allowUserToggle: true
+  window:
+    defaultWidth: 1000
+    defaultHeight: 700
+    minWidth: 800
+    minHeight: 600
+    resizable: true
+  locale:
+    default: en
+    supported:
+      - en
+      - hu
+
+# Document Processing Configuration
+processing:
+  tempDirectory: ${java.io.tmpdir}/manusmith-shell
+  maxFileSizeMB: 50
+  supportedFormats:
+    input:
+      - docx
+      - odt
+      - txt
+      - md
+    output:
+      - docx
+      - txt
+  backup:
+    enabled: true
+    directory: ${user.home}/.manusmith-shell/backups
+    retentionDays: 30
+
+# Performance Settings
+performance:
+  asyncProcessing: true
+  threadPoolSize: 4
+  maxConcurrentOperations: 2
+
+# Metrics Configuration
+metrics:
+  enabled: true
+  jmx:
+    enabled: true
+    domain: org.manusmith.shell
+
+# Security Settings
+security:
+  fileAccess:
+    restrictToUserHome: false
+    blockedExtensions:
+      - exe
+      - bat
+      - sh
+      - cmd
+  validation:
+    maxPathLength: 260
+    sanitizeFilenames: true

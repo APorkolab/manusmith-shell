@@ -1,0 +1,366 @@
+/* Material Design Dark Theme */
+/* Based on Google Material Design 3.0 specifications */
+
+.root {
+    -fx-font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-base: #121212;
+    -fx-background: linear-gradient(to bottom, #1e1e1e, #121212);
+    -fx-text-background-color: #1e1e1e;
+    -fx-control-inner-background: #1e1e1e;
+    -fx-text-fill: #ffffff;
+}
+
+/* Material Design Dark Color Palette */
+/* Primary Colors */
+.primary { -fx-background-color: #90caf9; }
+.primary-dark { -fx-background-color: #42a5f5; }
+.primary-light { -fx-background-color: #bbdefb; }
+
+/* Accent Colors */
+.accent { -fx-background-color: #64ffda; }
+.accent-dark { -fx-background-color: #1de9b6; }
+
+/* Surface and Background */
+.surface { -fx-background-color: #1e1e1e; }
+.background { -fx-background-color: #121212; }
+
+/* Text Colors */
+.text-primary { -fx-text-fill: #ffffff; }
+.text-secondary { -fx-text-fill: #b0bec5; }
+.text-disabled { -fx-text-fill: #616161; }
+
+/* Shadows and Elevation for Dark Theme */
+.elevation-1 { -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.24), 2, 0, 0, 1); }
+.elevation-2 { -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.32), 4, 0, 0, 2); }
+.elevation-4 { -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.48), 6, 0, 0, 4); }
+.elevation-8 { -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.64), 10, 0, 0, 8); }
+
+/* Buttons */
+.button {
+    -fx-background-color: #90caf9;
+    -fx-text-fill: #000000;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.32), 3, 0, 0, 2);
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #64b5f6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.48), 5, 0, 0, 3);
+}
+
+.button:pressed {
+    -fx-background-color: #42a5f5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.24), 2, 0, 0, 1);
+}
+
+.button:disabled {
+    -fx-background-color: #424242;
+    -fx-text-fill: #616161;
+    -fx-effect: null;
+}
+
+/* Flat Buttons */
+.button.flat {
+    -fx-background-color: transparent;
+    -fx-text-fill: #90caf9;
+    -fx-effect: null;
+}
+
+.button.flat:hover {
+    -fx-background-color: rgba(144, 202, 249, 0.08);
+}
+
+.button.flat:pressed {
+    -fx-background-color: rgba(144, 202, 249, 0.16);
+}
+
+/* Text Fields */
+.text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: #616161;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 8 0 8 0;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused {
+    -fx-border-color: #90caf9;
+    -fx-border-width: 0 0 2 0;
+}
+
+/* Material Design Text Field (Outlined) */
+.text-field.outlined {
+    -fx-background-color: transparent;
+    -fx-border-color: #616161;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 12 16 12 16;
+}
+
+.text-field.outlined:focused {
+    -fx-border-color: #90caf9;
+    -fx-border-width: 2;
+}
+
+/* Tabs */
+.tab-pane {
+    -fx-background-color: #1e1e1e;
+}
+
+.tab-pane .tab-header-area {
+    -fx-background-color: #1e1e1e;
+    -fx-border-color: #424242;
+    -fx-border-width: 0 0 1 0;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.tab-pane .tab {
+    -fx-background-color: transparent;
+    -fx-text-fill: #b0bec5;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-padding: 16 24 16 24;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: transparent;
+}
+
+.tab-pane .tab:hover {
+    -fx-background-color: rgba(144, 202, 249, 0.08);
+}
+
+.tab-pane .tab:selected {
+    -fx-text-fill: #90caf9;
+    -fx-border-color: #90caf9;
+    -fx-background-color: rgba(144, 202, 249, 0.04);
+}
+
+.tab-pane .tab .tab-close-button {
+    -fx-background-color: transparent;
+}
+
+/* Toolbar */
+.tool-bar {
+    -fx-background-color: #1e1e1e;
+    -fx-border-color: #424242;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 8 16 8 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.24), 2, 0, 0, 1);
+}
+
+/* CheckBox */
+.check-box {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+}
+
+.check-box .box {
+    -fx-background-color: transparent;
+    -fx-border-color: #b0bec5;
+    -fx-border-width: 2;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #90caf9;
+    -fx-border-color: #90caf9;
+}
+
+.check-box:indeterminate .box {
+    -fx-background-color: #90caf9;
+    -fx-border-color: #90caf9;
+}
+
+/* Choice Box */
+.choice-box {
+    -fx-background-color: #2e2e2e;
+    -fx-border-color: #616161;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8 16 8 16;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.24), 2, 0, 0, 1);
+}
+
+.choice-box:focused,
+.choice-box:showing {
+    -fx-border-color: #90caf9;
+    -fx-border-width: 2;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+}
+
+.label.title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 500;
+}
+
+.label.subtitle {
+    -fx-font-size: 16px;
+    -fx-font-weight: 400;
+    -fx-text-fill: #b0bec5;
+}
+
+.label.caption {
+    -fx-font-size: 12px;
+    -fx-text-fill: #b0bec5;
+}
+
+/* Progress Indicators */
+.progress-indicator {
+    -fx-progress-color: #90caf9;
+    -fx-accent: #90caf9;
+}
+
+.progress-bar {
+    -fx-progress-color: #90caf9;
+    -fx-accent: #90caf9;
+    -fx-background-color: #424242;
+    -fx-background-radius: 2;
+}
+
+.progress-bar .bar {
+    -fx-background-color: #90caf9;
+    -fx-background-radius: 2;
+    -fx-padding: 4;
+}
+
+/* Cards - Custom style class */
+.card {
+    -fx-background-color: #2e2e2e;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.32), 4, 0, 0, 3);
+    -fx-padding: 16;
+    -fx-spacing: 8;
+}
+
+.card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.48), 6, 0, 0, 5);
+}
+
+/* Drag and Drop Areas */
+.drag-drop-area {
+    -fx-background-color: #212121;
+    -fx-border-color: #90caf9;
+    -fx-border-width: 2;
+    -fx-border-style: dashed;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 32;
+    -fx-alignment: center;
+}
+
+.drag-drop-area.drag-over {
+    -fx-background-color: rgba(144, 202, 249, 0.08);
+    -fx-border-style: solid;
+}
+
+/* Status Bar */
+.status-bar {
+    -fx-background-color: #1e1e1e;
+    -fx-border-color: #424242;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 8 16 8 16;
+}
+
+/* Menu and Context Menu */
+.menu-bar {
+    -fx-background-color: #1e1e1e;
+    -fx-border-color: #424242;
+    -fx-border-width: 0 0 1 0;
+}
+
+.menu-bar .menu {
+    -fx-text-fill: #ffffff;
+}
+
+.menu-bar .menu:hover {
+    -fx-background-color: rgba(144, 202, 249, 0.08);
+}
+
+.context-menu {
+    -fx-background-color: #2e2e2e;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.48), 6, 0, 0, 4);
+}
+
+.menu-item {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: transparent;
+}
+
+.menu-item:hover {
+    -fx-background-color: rgba(144, 202, 249, 0.08);
+}
+
+/* Separator */
+.separator .line {
+    -fx-border-color: #424242;
+}
+
+/* Animations */
+.fade-in {
+    -fx-opacity: 0.0;
+}
+
+/* ScrollPane */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .corner {
+    -fx-background-color: transparent;
+}
+
+/* ScrollBars */
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: #616161;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #616161;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #757575;
+}
+
+/* Special elevated surfaces */
+.elevated-surface {
+    -fx-background-color: derive(#1e1e1e, 8%);
+}
