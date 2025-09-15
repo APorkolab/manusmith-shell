@@ -11,7 +11,7 @@ Kényelmes, egyszerű **UI/CLI**, ami elrejti az engine részleteit, és 1–2 k
 | **MVP** (Shunn formázás) |  Implementálva | Az `italic → underline` konverzió működik. |
 | **Cover Letter** | Implementálva | A kísérőlevél-generátor működik. |
 | **TypoKit** | Implementálva | Alapvető tipográfiai javítások (HU/DE/EN) és jelenettörés-normalizálás megvalósítva. |
-| **QuickConvert** | Részben implementálva | Támogatott konverziók: `.txt`↔`.docx`, `.md`→`.txt`, `.odt`→`.txt`. |
+| **QuickConvert** | Teljesen implementálva | Támogatott konverziók: `.txt`↔`.docx`, `.md`→`.txt`, `.odt`↔`.txt`, `.odt`↔`.docx`. |
 | **CrossClip Lite** | Implementálva | Tálcaikon, téma váltó és vágólap-tisztító funkcióval. |
 
 ---
@@ -59,8 +59,10 @@ Kényelmes, egyszerű **UI/CLI**, ami elrejti az engine részleteit, és 1–2 k
 
 * **QuickConvert tab**
 
-  * Drag&drop → `.docx/.odt/.md/.txt` round-trip konverzió.
-  * Automatikus kimenet „out” mappába.
+  * Drag&drop → `.docx/.odt/.md/.txt` teljes round-trip konverzió.
+  * ODT fájlok natív támogatása (olvasás és írás).
+  * Italic formázás megőrzése ODT konverziók során.
+  * Automatikus kimenet "out" mappába.
 
 * **CrossClip Lite**
 
@@ -84,7 +86,8 @@ Kényelmes, egyszerű **UI/CLI**, ami elrejti az engine részleteit, és 1–2 k
 
 3. **Integration**
 
-   * Engine JAR-t dependency-ként behúzza.
+   * Engine JAR-t dependency-ként behúzza (v2.0.0).
+   * Teljes ODT (OpenDocument Text) támogatás a manusmith-engine v2.0.0 verzióval.
    * A shell sosem implementál parsingot, csak felhasználja.
 
 ---
