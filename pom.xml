@@ -464,7 +464,7 @@
                   <macPackageSigningPrefix>org.manusmith</macPackageSigningPrefix>
                   <macSign>false</macSign>
                   <macBundleName>ManuSmith Shell</macBundleName>
-                  <macAppCategory>public.app-category.productivity</macCategory>
+              <macAppCategory>public.app-category.productivity</macAppCategory>
                   <javaOptions>
                     <option>-Xmx2048m</option>
                     <option>-Djava.awt.headless=false</option>
