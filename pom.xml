@@ -302,6 +302,49 @@
           </execution>
         </executions>
       </plugin>
+      
+      <!-- ProGuard for code obfuscation -->
+      <plugin>
+        <groupId>com.github.wvengen</groupId>
+        <artifactId>proguard-maven-plugin</artifactId>
+        <version>2.6.0</version>
+        <executions>
+          <execution>
+            <id>obfuscate</id>
+            <phase>package</phase>
+            <goals>
+              <goal>proguard</goal>
+            </goals>
+            <configuration>
+              <proguardVersion>7.3.2</proguardVersion>
+              <injar>${project.build.finalName}-jar-with-dependencies.jar</injar>
+              <outjar>${project.build.finalName}-obfuscated.jar</outjar>
+              <includeDependency>false</includeDependency>
+              <obfuscate>true</obfuscate>
+              <options>
+                <option>-dontshrink</option>
+                <option>-dontoptimize</option>
+                <option>-dontnote</option>
+                <option>-dontwarn **</option>
+                <option>-ignorewarnings</option>
+                <option>-keep class org.manusmith.shell.MainApp { public static void main(java.lang.String[]); }</option>
+                <option>-keep class * extends javafx.application.Application { *; }</option>
+                <option>-keep class * implements java.io.Serializable { *; }</option>
+                <option>-keepclassmembers class * { @javafx.fxml.FXML *; }</option>
+                <option>-keepclassmembers class * extends javafx.scene.control.* { *; }</option>
+                <option>-keep class org.manusmith.shell.controller.* { public *; }</option>
+                <option>-keep class org.manusmith.shell.service.* { public *; }</option>
+                <option>-keepattributes Signature,*Annotation*,InnerClasses,EnclosingMethod</option>
+                <option>-adaptresourcefilenames **.fxml,**.css,**.properties</option>
+                <option>-adaptresourcefilecontents **.properties,META-INF/MANIFEST.MF</option>
+              </options>
+              <libs>
+                <lib>${java.home}/jmods</lib>
+              </libs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -329,6 +372,110 @@
           <classifier>${javafx.platform}</classifier>
         </dependency>
       </dependencies>
+    </profile>
+    
+    <!-- Windows native packaging -->
+    <profile>
+      <id>windows-package</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.panteleyev</groupId>
+            <artifactId>jpackage-maven-plugin</artifactId>
+            <version>1.6.5</version>
+            <executions>
+              <execution>
+                <id>windows-msi</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>jpackage</goal>
+                </goals>
+                <configuration>
+                  <name>ManuSmith Shell</name>
+                  <appVersion>2.0.0</appVersion>
+                  <vendor>ManuSmith</vendor>
+                  <copyright>© 2025 ManuSmith. All rights reserved.</copyright>
+                  <description>Professional manuscript processing tool with ODT support</description>
+                  <mainClass>org.manusmith.shell.MainApp</mainClass>
+                  <mainJar>${project.build.finalName}-obfuscated.jar</mainJar>
+                  <type>MSI</type>
+                  <input>${project.build.directory}</input>
+                  <destination>${project.build.directory}/dist</destination>
+                  <winIcon>src/main/resources/icons/manusmith.ico</winIcon>
+                  <winMenu>true</winMenu>
+                  <winShortcut>true</winShortcut>
+                  <winShortcutPrompt>true</winShortcutPrompt>
+                  <winMenuGroup>ManuSmith</winMenuGroup>
+                  <winDirChooser>true</winDirChooser>
+                  <winUpgradeUuid>12345678-1234-1234-1234-123456789012</winUpgradeUuid>
+                  <javaOptions>
+                    <option>-Xmx2048m</option>
+                    <option>-Djava.awt.headless=false</option>
+                    <option>--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</option>
+                  </javaOptions>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- macOS native packaging -->
+    <profile>
+      <id>macos-package</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.panteleyev</groupId>
+            <artifactId>jpackage-maven-plugin</artifactId>
+            <version>1.6.5</version>
+            <executions>
+              <execution>
+                <id>mac-dmg</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>jpackage</goal>
+                </goals>
+                <configuration>
+                  <name>ManuSmith Shell</name>
+                  <appVersion>2.0.0</appVersion>
+                  <vendor>ManuSmith</vendor>
+                  <copyright>© 2025 ManuSmith. All rights reserved.</copyright>
+                  <description>Professional manuscript processing tool with ODT support</description>
+                  <mainClass>org.manusmith.shell.MainApp</mainClass>
+                  <mainJar>${project.build.finalName}-obfuscated.jar</mainJar>
+                  <type>DMG</type>
+                  <input>${project.build.directory}</input>
+                  <destination>${project.build.directory}/dist</destination>
+                  <macIcon>src/main/resources/icons/manusmith.icns</macIcon>
+                  <macPackageName>org.manusmith.shell</macPackageName>
+                  <macPackageIdentifier>org.manusmith.shell</macPackageIdentifier>
+                  <macPackageSigningPrefix>org.manusmith</macPackageSigningPrefix>
+                  <macSign>false</macSign>
+                  <macBundleName>ManuSmith Shell</macBundleName>
+                  <macAppCategory>public.app-category.productivity</macCategory>
+                  <javaOptions>
+                    <option>-Xmx2048m</option>
+                    <option>-Djava.awt.headless=false</option>
+                    <option>--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</option>
+                  </javaOptions>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>
