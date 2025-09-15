@@ -32,7 +32,7 @@ jobs:
 
     - name: Install manusmith-engine dependency
       run: |
-        git clone https://github.com/dr-porkolab-adam/manusmith-engine.git
+        git clone https://github.com/APorkolab/manusmith-engine.git
         cd manusmith-engine
         mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
 
@@ -82,7 +82,7 @@ jobs:
 
     - name: Install manusmith-engine dependency
       run: |
-        git clone https://github.com/dr-porkolab-adam/manusmith-engine.git
+        git clone https://github.com/APorkolab/manusmith-engine.git
         cd manusmith-engine
         mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
 
@@ -118,7 +118,7 @@ jobs:
 
     - name: Install manusmith-engine dependency
       run: |
-        git clone https://github.com/dr-porkolab-adam/manusmith-engine.git
+        git clone https://github.com/APorkolab/manusmith-engine.git
         cd manusmith-engine
         mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
 
@@ -150,7 +150,7 @@ jobs:
 
     - name: Install manusmith-engine dependency
       run: |
-        git clone https://github.com/dr-porkolab-adam/manusmith-engine.git
+        git clone https://github.com/APorkolab/manusmith-engine.git
         cd manusmith-engine
         mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
 
