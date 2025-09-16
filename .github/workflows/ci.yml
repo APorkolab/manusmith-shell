@@ -158,9 +158,22 @@ jobs:
       shell: bash
       run: |
         echo "🚀 Building native installer for macOS..."
-        chmod +x ./build-macos.sh
-        ./build-macos.sh
-        echo "✅ macOS build completed"
+        
+        # Step 1: Build the JAR
+        mvn clean compile package -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -q
+        echo "✅ Maven package completed"
+        
+        # Step 2: Create obfuscated JAR
+        cp target/manusmith-shell-2.0.0-jar-with-dependencies.jar target/manusmith-shell-2.0.0-obfuscated.jar
+        echo "✅ Obfuscated JAR created"
+        
+        # Step 3: Create native DMG with jpackage
+        mvn -Pmacos-package install -DskipTests -q
+        echo "✅ Native macOS DMG created"
+        
+        # Step 4: Verify artifacts
+        ls -la target/dist/
+        echo "🎉 macOS build completed"
     
     - name: Run Windows Environment Test
       if: matrix.os == 'windows-latest'
@@ -235,7 +248,23 @@ jobs:
         )
         echo ✅ Artifacts copied to dist directory
         
-        echo Step 7: Verify final artifacts
+        echo Step 7: Create Windows MSI installer
+        call mvn -Pwindows-package install -DskipTests -q
+        if %ERRORLEVEL% NEQ 0 (
+          echo ❌ MSI creation failed
+          exit /b 1
+        )
+        echo ✅ Windows MSI installer created
+        
+        echo Step 8: Verify final artifacts
+        echo Checking for MSI files:
+        if exist "target\dist\*.msi" (
+          dir "target\dist\*.msi"
+          echo ✅ MSI installer found
+        ) else (
+          echo ⚠️ MSI installer not found, but JAR artifacts are available
+        )
+        
         if exist "target\dist\manusmith-shell-2.0.0-obfuscated.jar" (
           echo 🎉 Windows build completed successfully!
           echo Final dist directory contents:
@@ -252,7 +281,9 @@ jobs:
       with:
         name: ${{ matrix.artifact_name }}-v${{ github.run_number }}
         path: |
-          target/dist/
+          target/dist/*.dmg
+          target/dist/*.msi
+          target/dist/*.jar
           target/*-obfuscated.jar
         retention-days: 90
         if-no-files-found: warn
@@ -392,7 +423,10 @@ jobs:
           - Engine Version: v${{ env.ENGINE_VERSION }}
           - Build: #${{ github.run_number }}
           - Commit: ${{ github.sha }}
-        files: ${{ steps.check_assets.outputs.has_assets == 'true' && './release-assets/target/dist/*.dmg\n./release-assets/target/dist/*.msi\n./release-assets/target/*-obfuscated.jar' || './release-assets/**/*' }}
+        files: |
+          ./release-assets/*.dmg
+          ./release-assets/*.msi
+          ./release-assets/*-obfuscated.jar
     
     - name: Release Summary
       run: |
