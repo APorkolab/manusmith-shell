@@ -5,7 +5,7 @@
     -fx-font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
     -fx-font-size: 14px;
     -fx-base: #f5f5f5;
-    -fx-background: linear-gradient(to bottom, #fafafa, #f5f5f5);
+    -fx-background: #fafafa;
     -fx-text-background-color: #ffffff;
     -fx-control-inner-background: #ffffff;
     -fx-text-fill: #212121;

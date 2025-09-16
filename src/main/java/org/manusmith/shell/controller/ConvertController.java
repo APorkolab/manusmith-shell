@@ -5,6 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import org.manusmith.shell.dto.AuthorMeta;
 import org.manusmith.shell.dto.ConvertRequest;
@@ -25,6 +28,7 @@ import java.util.Optional;
 public class ConvertController {
 
     @FXML private VBox contentBox;
+    @FXML private VBox dragDropArea;
     @FXML private ProgressIndicator progressIndicator;
 
     @FXML private TextField tfInput;
@@ -41,6 +45,9 @@ public class ConvertController {
     private EngineBridge engineBridge;
     private ValidationService validationService;
     private PreferencesService preferencesService;
+    
+    private static final String DRAG_IDLE_STYLE = "-fx-border-color: #d0d0d0; -fx-border-style: dashed; -fx-border-width: 2; -fx-background-color: #fafafa; -fx-border-radius: 8; -fx-background-radius: 8;";
+    private static final String DRAG_HOVER_STYLE = "-fx-border-color: #2196F3; -fx-border-style: dashed; -fx-border-width: 2; -fx-background-color: #e3f2fd; -fx-border-radius: 8; -fx-background-radius: 8;";
 
     @FXML
     public void initialize() {
@@ -49,6 +56,7 @@ public class ConvertController {
         this.validationService = new ValidationService();
         this.preferencesService = new PreferencesService();
         loadPreferences();
+        setupDragAndDrop();
     }
 
     private void loadPreferences() {
@@ -138,6 +146,72 @@ public class ConvertController {
         contentBox.disableProperty().bind(generationTask.runningProperty());
 
         new Thread(generationTask).start();
+    }
+    
+    private void setupDragAndDrop() {
+        // Set initial style
+        dragDropArea.setStyle(DRAG_IDLE_STYLE);
+        
+        // Setup drag and drop event handlers
+        dragDropArea.setOnDragOver(this::handleDragOver);
+        dragDropArea.setOnDragDropped(this::handleDragDropped);
+        dragDropArea.setOnDragEntered(event -> {
+            dragDropArea.setStyle(DRAG_HOVER_STYLE);
+            event.consume();
+        });
+        dragDropArea.setOnDragExited(event -> {
+            dragDropArea.setStyle(DRAG_IDLE_STYLE);
+            event.consume();
+        });
+    }
+    
+    private void handleDragOver(DragEvent event) {
+        if (event.getGestureSource() != dragDropArea && event.getDragboard().hasFiles()) {
+            // Check if the dragged files contain .docx files
+            Dragboard db = event.getDragboard();
+            List<File> files = db.getFiles();
+            boolean hasDocxFile = files.stream()
+                    .anyMatch(file -> file.getName().toLowerCase().endsWith(".docx"));
+            
+            if (hasDocxFile) {
+                event.acceptTransferModes(TransferMode.COPY);
+            }
+        }
+        event.consume();
+    }
+    
+    private void handleDragDropped(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        boolean success = false;
+        
+        if (db.hasFiles()) {
+            List<File> files = db.getFiles();
+            // Find the first .docx file
+            Optional<File> docxFile = files.stream()
+                    .filter(file -> file.getName().toLowerCase().endsWith(".docx"))
+                    .findFirst();
+                    
+            if (docxFile.isPresent()) {
+                File file = docxFile.get();
+                tfInput.setText(file.getAbsolutePath());
+                StatusService.getInstance().updateStatus("Input file selected via drag & drop: " + file.getName());
+                
+                // Auto-generate output filename if not set
+                if (Strings.isBlank(tfOutput.getText())) {
+                    String outputName = file.getName().replaceFirst("[.][^.]+$", "") + " (Shunn).docx";
+                    tfOutput.setText(new File(file.getParent(), outputName).getAbsolutePath());
+                }
+                success = true;
+            } else {
+                StatusService.getInstance().updateStatus("Please drop a .docx file.");
+            }
+        }
+        
+        // Reset style
+        dragDropArea.setStyle(DRAG_IDLE_STYLE);
+        
+        event.setDropCompleted(success);
+        event.consume();
     }
     
     @FXML

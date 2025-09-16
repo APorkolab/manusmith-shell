@@ -5,7 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
+import org.manusmith.shell.service.FileDialogs;
 import org.manusmith.shell.service.PreferencesService;
 import org.manusmith.shell.service.StatusService;
 import org.manusmith.shell.util.Fx;
@@ -19,8 +21,10 @@ public class MainController {
 
     @FXML private Label lblStatus;
     @FXML private ChoiceBox<String> languageSelector;
+    @FXML private TabPane tabs;
 
     private PreferencesService preferencesService;
+    private FileDialogs fileDialogs;
 
     @FXML
     public void initialize() {
@@ -28,6 +32,7 @@ public class MainController {
         lblStatus.textProperty().bind(StatusService.getInstance().statusProperty());
 
         preferencesService = new PreferencesService();
+        fileDialogs = new FileDialogs();
         setupLanguageSelector();
     }
 
@@ -65,8 +70,23 @@ public class MainController {
 
     @FXML
     private void onOpen() {
-        // This could be used for a global open action in the future
-        StatusService.getInstance().updateStatus("Open action triggered.");
+        StatusService.getInstance().updateStatus("Opening file browser...");
+        
+        fileDialogs.showOpenDocxDialog(lblStatus.getScene().getWindow())
+            .ifPresent(file -> {
+                // Get the current tab and try to set the input file
+                int selectedTabIndex = tabs.getSelectionModel().getSelectedIndex();
+                
+                if (selectedTabIndex == 0) { // Convert tab
+                    // Need to access the ConvertController to set the input file
+                    // For now, just show status message
+                    StatusService.getInstance().updateStatus("File selected: " + file.getName() + " - Please drag and drop to the Convert tab or use its Browse button.");
+                } else if (selectedTabIndex == 1) { // Quick Convert tab
+                    StatusService.getInstance().updateStatus("File selected: " + file.getName() + " - Please drag and drop to the Quick Convert area.");
+                } else {
+                    StatusService.getInstance().updateStatus("File selected: " + file.getName() + " - Please switch to Convert or Quick Convert tab to use this file.");
+                }
+            });
     }
 
     @FXML

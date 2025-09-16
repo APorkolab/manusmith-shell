@@ -185,6 +185,13 @@ public class ThemeService {
         
         // Apply new theme
         this.currentTheme = theme;
+        
+        // Ensure JavaFX fixes are loaded first
+        String fixesStylesheet = getJavaFxFixesStylesheet();
+        if (fixesStylesheet != null && !scene.getStylesheets().contains(fixesStylesheet)) {
+            scene.getStylesheets().add(fixesStylesheet);
+        }
+        
         String newStylesheet = theme.getStylesheet();
         if (newStylesheet != null) {
             scene.getStylesheets().add(newStylesheet);
@@ -201,6 +208,14 @@ public class ThemeService {
      * Apply current theme to scene
      */
     public void applyCurrentTheme(Scene scene) {
+        // First apply JavaFX fixes to prevent CSS warnings
+        String fixesStylesheet = getJavaFxFixesStylesheet();
+        if (fixesStylesheet != null && !scene.getStylesheets().contains(fixesStylesheet)) {
+            scene.getStylesheets().add(fixesStylesheet);
+            logger.debug("Applied JavaFX fixes stylesheet");
+        }
+        
+        // Then apply the theme stylesheet
         String stylesheet = currentTheme.getStylesheet();
         if (stylesheet != null && !scene.getStylesheets().contains(stylesheet)) {
             scene.getStylesheets().add(stylesheet);
@@ -253,6 +268,18 @@ public class ThemeService {
             if (detectedTheme != currentTheme) {
                 setTheme(scene, detectedTheme);
             }
+        }
+    }
+    
+    /**
+     * Get JavaFX fixes stylesheet to prevent CSS warnings
+     */
+    private String getJavaFxFixesStylesheet() {
+        try {
+            return Objects.requireNonNull(getClass().getResource("/styles/javafx-fixes.css")).toExternalForm();
+        } catch (Exception e) {
+            logger.warn("Could not load JavaFX fixes stylesheet", e);
+            return null;
         }
     }
 }

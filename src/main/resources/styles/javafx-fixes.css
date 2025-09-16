@@ -1,0 +1,82 @@
+/* JavaFX CSS Fixes to prevent ClassCastException warnings */
+/* These rules override problematic default JavaFX CSS properties */
+
+/* Fix text-area background color casting issues */
+.text-area {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #212121;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.text-area:focused {
+    -fx-border-color: #1976d2;
+    -fx-border-width: 2;
+}
+
+/* Dark theme text-area */
+.root.dark .text-area {
+    -fx-background-color: #2e2e2e;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #616161;
+}
+
+.root.dark .text-area:focused {
+    -fx-border-color: #90caf9;
+}
+
+/* Fix separator line color issues */
+.separator .line {
+    -fx-background-color: #e0e0e0;
+    -fx-border-color: #e0e0e0;
+}
+
+.separator:vertical .line {
+    -fx-background-color: #e0e0e0;
+    -fx-border-color: #e0e0e0;
+}
+
+/* Dark theme separator */
+.root.dark .separator .line {
+    -fx-background-color: #424242;
+    -fx-border-color: #424242;
+}
+
+.root.dark .separator:vertical .line {
+    -fx-background-color: #424242;
+    -fx-border-color: #424242;
+}
+
+/* Ensure all color properties use solid colors, not gradients */
+.progress-indicator .percentage {
+    -fx-fill: #1976d2;
+}
+
+.progress-bar .track {
+    -fx-background-color: #e0e0e0;
+}
+
+.progress-bar .bar {
+    -fx-background-color: #1976d2;
+}
+
+/* Dark theme progress indicators */
+.root.dark .progress-indicator .percentage {
+    -fx-fill: #90caf9;
+}
+
+.root.dark .progress-bar .track {
+    -fx-background-color: #424242;
+}
+
+.root.dark .progress-bar .bar {
+    -fx-background-color: #90caf9;
+}
+
+/* Fix any remaining gradient-to-color casting issues */
+.root * {
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
