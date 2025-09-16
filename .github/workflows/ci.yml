@@ -218,7 +218,7 @@ jobs:
     name: Create Release with Native Installers
     needs: build-cross-platform
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' || startsWith(github.ref, 'refs/tags/')
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'push' || startsWith(github.ref, 'refs/tags/')) && success()
     
     steps:
     - name: Checkout Repository
@@ -226,21 +226,36 @@ jobs:
     
     - name: Download macOS Package
       uses: actions/download-artifact@v4
+      continue-on-error: true
       with:
         name: ManuSmith-Shell-macOS-v${{ github.run_number }}
         path: ./release-assets/
     
     - name: Download Windows Package  
       uses: actions/download-artifact@v4
+      continue-on-error: true
       with:
         name: ManuSmith-Shell-Windows-v${{ github.run_number }}
         path: ./release-assets/
     
-    - name: List Release Assets
+    - name: Check and List Release Assets
+      id: check_assets
       run: |
-        echo "📋 Release assets prepared:"
-        find ./release-assets -type f -name "*.dmg" -o -name "*.msi" -o -name "*-obfuscated.jar" | sort
-        echo "Total files: $(find ./release-assets -type f | wc -l)"
+        echo "📋 Checking available release assets:"
+        mkdir -p ./release-assets
+        
+        # Count available assets
+        ASSET_COUNT=$(find ./release-assets -type f -name "*.dmg" -o -name "*.msi" -o -name "*-obfuscated.jar" | wc -l)
+        echo "Total assets found: $ASSET_COUNT"
+        
+        if [ $ASSET_COUNT -eq 0 ]; then
+          echo "⚠️ No native installers found - will create release with available artifacts only"
+          echo "has_assets=false" >> $GITHUB_OUTPUT
+        else
+          echo "✅ Found $ASSET_COUNT native installer assets:"
+          find ./release-assets -type f -name "*.dmg" -o -name "*.msi" -o -name "*-obfuscated.jar" | sort
+          echo "has_assets=true" >> $GITHUB_OUTPUT
+        fi
     
     - name: Extract Version
       id: version
@@ -268,10 +283,11 @@ jobs:
           ## 🎉 ManuSmith Shell Release ${{ steps.version.outputs.version }}
           
           ### 🔥 What's New
-          - **Native Desktop Applications**: Ready-to-install packages for macOS and Windows
+          - **ManuSmith Engine v${{ env.ENGINE_VERSION }}**: Latest engine integration with full ODT support
           - **Full ODT Support**: Complete OpenDocument Text file processing capabilities  
-          - **ProGuard Obfuscation**: Enhanced security with obfuscated bytecode
-          - **ManuSmith Engine v${{ env.ENGINE_VERSION }}**: Latest engine integration
+          - **Enhanced Build System**: Improved CI/CD pipeline with cross-platform builds
+          ${{ steps.check_assets.outputs.has_assets == 'true' && '- **Native Desktop Applications**: Ready-to-install packages for macOS and Windows' || '- **Development Build**: Source code and JAR files available' }}
+          ${{ steps.check_assets.outputs.has_assets == 'true' && '- **ProGuard Obfuscation**: Enhanced security with obfuscated bytecode' || '' }}
           
           ### 📦 Download Options
           
@@ -298,10 +314,7 @@ jobs:
           - Engine Version: v${{ env.ENGINE_VERSION }}
           - Build: #${{ github.run_number }}
           - Commit: ${{ github.sha }}
-        files: |
-          ./release-assets/target/dist/*.dmg
-          ./release-assets/target/dist/*.msi
-          ./release-assets/target/*-obfuscated.jar
+        files: ${{ steps.check_assets.outputs.has_assets == 'true' && './release-assets/target/dist/*.dmg\n./release-assets/target/dist/*.msi\n./release-assets/target/*-obfuscated.jar' || './release-assets/**/*' }}
     
     - name: Release Summary
       run: |

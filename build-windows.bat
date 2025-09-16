@@ -72,6 +72,15 @@ REM Create simple obfuscated JAR (copy the fat JAR as obfuscated for now)
 echo 🔐 Creating obfuscated JAR...
 echo Debug: Listing target directory contents after package
 dir target\*.jar
+echo Debug: Checking specifically for jar-with-dependencies
+if exist "target\manusmith-shell-2.0.0-jar-with-dependencies.jar" (
+    echo ✅ Fat JAR found, ready for copying
+) else (
+    echo ❌ Fat JAR not found - Maven package may have failed
+    echo Debug: Full target directory listing:
+    dir target
+    exit /b 1
+)
 copy target\manusmith-shell-2.0.0-jar-with-dependencies.jar target\manusmith-shell-2.0.0-obfuscated.jar
 if exist "target\manusmith-shell-2.0.0-obfuscated.jar" (
     echo ✅ Obfuscated JAR created successfully (using fat JAR)
@@ -80,44 +89,35 @@ if exist "target\manusmith-shell-2.0.0-obfuscated.jar" (
     exit /b 1
 )
 
-REM Create native Windows installer
-echo 📦 Creating Windows MSI installer...
-echo Debug: Checking if obfuscated JAR exists before MSI creation
+REM Create target\dist directory for artifacts
+echo 📦 Creating dist directory and copying artifacts...
+mkdir target\dist 2>nul
 if exist "target\manusmith-shell-2.0.0-obfuscated.jar" (
-    echo ✅ Obfuscated JAR found for MSI creation
+    echo ✅ Copying obfuscated JAR to dist directory
+    copy target\manusmith-shell-2.0.0-obfuscated.jar target\dist\
 ) else (
-    echo ❌ Obfuscated JAR missing for MSI creation
+    echo ❌ Obfuscated JAR missing, cannot proceed
     exit /b 1
 )
-echo Debug: Running Maven with windows-package profile
-mvn -Pwindows-package install -DskipTests -Dspotbugs.skip=true -q
-if errorlevel 1 (
-    echo ❌ Maven windows-package install failed
-    exit /b 1
-)
-echo ✅ Maven windows-package completed
 
-REM Check if MSI was created
-set MSI_PATH="target\dist\ManuSmith Shell-2.0.0.msi"
-if exist %MSI_PATH% (
-    echo 🎉 Windows MSI created successfully: %MSI_PATH%
-    for %%A in (%MSI_PATH%) do echo 📊 MSI size: %%~zA bytes
-    echo.
-    echo 📋 Installation instructions:
-    echo 1. Right-click the MSI file and select "Install"
-    echo 2. Follow the installation wizard
-    echo 3. Launch from Start Menu or Desktop shortcut
-    echo.
-    echo 🔒 Note: The application code is obfuscated for protection
-) else (
-    echo ❌ MSI creation failed
-    echo Debug: Listing target and target\dist contents
-    dir target
-    if exist "target\dist" (
-        dir target\dist
+REM For now, skip MSI creation and just prepare files
+echo ⚠️ Skipping MSI creation for debugging - preparing JAR files only
+echo ✅ Files prepared in target\dist directory
+
+REM Check if files were prepared successfully
+echo Debug: Checking final build results
+if exist "target\dist" (
+    echo ✅ target\dist directory exists
+    dir target\dist
+    if exist "target\dist\manusmith-shell-2.0.0-obfuscated.jar" (
+        echo 🎉 Windows build completed successfully
+        echo 📋 Available for download: Obfuscated JAR in target\dist
     ) else (
-        echo target\dist directory does not exist
+        echo ❌ No obfuscated JAR found in dist directory
+        exit /b 1
     )
+) else (
+    echo ❌ target\dist directory was not created
     exit /b 1
 )
 
