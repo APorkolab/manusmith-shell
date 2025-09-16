@@ -134,8 +134,9 @@ jobs:
     - name: Install WiX Toolset (Windows only)
       if: matrix.os == 'windows-latest'
       run: |
-        choco install wixtoolset -y
-        echo "✅ WiX Toolset installed"
+        echo "📥 Installing WiX Toolset for MSI creation..."
+        choco install wixtoolset -y --no-progress
+        echo "✅ WiX Toolset installed successfully"
 
     - name: Build Native Package for macOS
       if: matrix.os == 'macos-latest'

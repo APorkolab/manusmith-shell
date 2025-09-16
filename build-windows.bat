@@ -62,9 +62,16 @@ mvn clean
 
 echo 🔨 Building project (without ProGuard in Maven)...
 mvn compile package -DskipTests -Dspotbugs.skip=true -q
+if errorlevel 1 (
+    echo ❌ Maven package build failed
+    exit /b 1
+)
+echo ✅ Maven package completed successfully
 
 REM Create simple obfuscated JAR (copy the fat JAR as obfuscated for now)
 echo 🔐 Creating obfuscated JAR...
+echo Debug: Listing target directory contents after package
+dir target\*.jar
 copy target\manusmith-shell-2.0.0-jar-with-dependencies.jar target\manusmith-shell-2.0.0-obfuscated.jar
 if exist "target\manusmith-shell-2.0.0-obfuscated.jar" (
     echo ✅ Obfuscated JAR created successfully (using fat JAR)
@@ -75,7 +82,20 @@ if exist "target\manusmith-shell-2.0.0-obfuscated.jar" (
 
 REM Create native Windows installer
 echo 📦 Creating Windows MSI installer...
+echo Debug: Checking if obfuscated JAR exists before MSI creation
+if exist "target\manusmith-shell-2.0.0-obfuscated.jar" (
+    echo ✅ Obfuscated JAR found for MSI creation
+) else (
+    echo ❌ Obfuscated JAR missing for MSI creation
+    exit /b 1
+)
+echo Debug: Running Maven with windows-package profile
 mvn -Pwindows-package install -DskipTests -Dspotbugs.skip=true -q
+if errorlevel 1 (
+    echo ❌ Maven windows-package install failed
+    exit /b 1
+)
+echo ✅ Maven windows-package completed
 
 REM Check if MSI was created
 set MSI_PATH="target\dist\ManuSmith Shell-2.0.0.msi"
@@ -91,6 +111,13 @@ if exist %MSI_PATH% (
     echo 🔒 Note: The application code is obfuscated for protection
 ) else (
     echo ❌ MSI creation failed
+    echo Debug: Listing target and target\dist contents
+    dir target
+    if exist "target\dist" (
+        dir target\dist
+    ) else (
+        echo target\dist directory does not exist
+    )
     exit /b 1
 )
 
