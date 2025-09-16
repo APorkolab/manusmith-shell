@@ -131,6 +131,21 @@ jobs:
         mvn install:install-file -Dfile=target/manusmith-engine-plugin-2.0.0.jar -DgroupId=org.manusmith -DartifactId=manusmith-engine-plugin -Dversion=2.0.0 -Dpackaging=jar -q
         echo "✅ ManuSmith Engine installed for ${{ matrix.platform }}"
 
+    - name: Windows Debug Info
+      if: matrix.os == 'windows-latest'
+      shell: cmd
+      run: |
+        echo 🔍 Windows runner debug information:
+        echo Current directory: %CD%
+        echo Listing project files:
+        dir
+        echo Checking for batch files:
+        dir *.bat
+        echo JAVA_HOME: %JAVA_HOME%
+        echo Testing basic commands:
+        java -version
+        mvn -version
+    
     - name: Install WiX Toolset (Windows only)
       if: matrix.os == 'windows-latest'
       run: |
@@ -146,6 +161,14 @@ jobs:
         chmod +x ./build-macos.sh
         ./build-macos.sh
         echo "✅ macOS build completed"
+    
+    - name: Run Windows Environment Test
+      if: matrix.os == 'windows-latest'
+      shell: cmd
+      run: |
+        echo 🧪 Running minimal Windows environment test first...
+        call test-windows.bat
+        echo ✅ Windows environment test completed
     
     - name: Build Native Package for Windows
       if: matrix.os == 'windows-latest'
