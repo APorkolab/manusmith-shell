@@ -123,7 +123,7 @@ public class EngineBridge {
         
         int lastDotIndex = filename.lastIndexOf('.');
         if (lastDotIndex > 0 && lastDotIndex < filename.length() - 1) {
-            return filename.substring(lastDotIndex + 1).toLowerCase();
+            return filename.substring(lastDotIndex + 1).toLowerCase(java.util.Locale.ROOT);
         }
         
         return "unknown";
@@ -213,8 +213,8 @@ public class EngineBridge {
         securityService.validateFileSize(inputFile);
         securityService.validateFileAccess(outputFile.getParentFile());
         
-        String inputName = inputFile.getName().toLowerCase();
-        String outputName = outputFile.getName().toLowerCase();
+        String inputName = inputFile.getName().toLowerCase(java.util.Locale.ROOT);
+        String outputName = outputFile.getName().toLowerCase(java.util.Locale.ROOT);
         
         logger.info("Quick converting {} to {}", inputName, outputName);
         
@@ -256,7 +256,7 @@ public class EngineBridge {
     }
 
     private void convertTxtToDocx(java.io.File inputFile, java.io.File outputFile) throws java.io.IOException {
-        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(inputFile));
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(inputFile), java.nio.charset.StandardCharsets.UTF_8));
              org.apache.poi.xwpf.usermodel.XWPFDocument document = new org.apache.poi.xwpf.usermodel.XWPFDocument()) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -271,7 +271,7 @@ public class EngineBridge {
     private void convertDocxToTxt(java.io.File inputFile, java.io.File outputFile) throws java.io.IOException {
         try (java.io.FileInputStream fis = new java.io.FileInputStream(inputFile);
              org.apache.poi.xwpf.usermodel.XWPFDocument document = new org.apache.poi.xwpf.usermodel.XWPFDocument(fis);
-             java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.FileWriter(outputFile))) {
+             java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(outputFile), java.nio.charset.StandardCharsets.UTF_8))) {
 
             org.apache.poi.xwpf.extractor.XWPFWordExtractor extractor = new org.apache.poi.xwpf.extractor.XWPFWordExtractor(document);
             writer.write(extractor.getText());
@@ -292,7 +292,7 @@ public class EngineBridge {
 
     private void convertOdtToTxt(java.io.File inputFile, java.io.File outputFile) throws java.io.IOException {
         try (OdfTextDocument doc = OdfTextDocument.loadDocument(inputFile);
-             java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.FileWriter(outputFile))) {
+             java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(outputFile), java.nio.charset.StandardCharsets.UTF_8))) {
 
             // Extract text content using the document's text iterator
             StringBuilder sb = new StringBuilder();

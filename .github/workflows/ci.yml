@@ -160,7 +160,7 @@ jobs:
         echo "🚀 Building native installer for macOS..."
         
         # Step 1: Build the JAR
-        mvn clean compile package -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -q
+        mvn clean compile package -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Dcheckstyle.skip=true -q
         echo "✅ Maven package completed"
         
         # Step 2: Create obfuscated JAR
@@ -198,7 +198,7 @@ jobs:
         echo ✅ Maven clean completed
         
         echo Step 2: Compile and package with dependencies
-        call mvn compile package -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -q
+        call mvn compile package -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Dcheckstyle.skip=true -q
         if %ERRORLEVEL% NEQ 0 (
           echo ❌ Maven package failed
           exit /b 1

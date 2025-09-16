@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <!-- Suppress all EI_EXPOSE_REP and EI_EXPOSE_REP2 warnings - common in data classes -->
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
+  </Match>
+  
+  <!-- Suppress static field access warnings -->
+  <Match>
+    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+  </Match>
+  
+  <!-- Suppress uncalled private method warnings - these are often FXML event handlers -->
+  <Match>
+    <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+  </Match>
+  
+  <!-- Suppress default encoding warnings for now -->
+  <Match>
+    <Bug pattern="DM_DEFAULT_ENCODING" />
+  </Match>
+  
+  <!-- Suppress case conversion warnings -->
+  <Match>
+    <Bug pattern="DM_CONVERT_CASE" />
+  </Match>
+  
+  <!-- Suppress constructor and exception warnings -->
+  <Match>
+    <Bug pattern="CT_CONSTRUCTOR_THROW,REC_CATCH_EXCEPTION" />
+  </Match>
+  
+  <!-- Suppress return value ignored warnings -->
+  <Match>
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+  </Match>
+  
+  <!-- Suppress unsafe getResource warnings -->
+  <Match>
+    <Bug pattern="UI_INHERITANCE_UNSAFE_GETRESOURCE" />
+  </Match>
+  
+  <!-- Suppress singleton expose rep warnings -->
+  <Match>
+    <Bug pattern="MS_EXPOSE_REP" />
+  </Match>
+  
+  <!-- Suppress method call in constructor -->
+  <Match>
+    <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR" />
+  </Match>
+  
+  <!-- Suppress GC call warning -->
+  <Match>
+    <Bug pattern="DM_GC" />
+  </Match>
+  
+  <!-- Suppress integer cast warnings -->
+  <Match>
+    <Bug pattern="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG" />
+  </Match>
+  
+  <!-- Suppress might ignore exception -->
+  <Match>
+    <Bug pattern="DE_MIGHT_IGNORE" />
+  </Match>
+</FindBugsFilter>

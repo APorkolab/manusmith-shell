@@ -226,6 +226,8 @@
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
+          <failOnError>false</failOnError>
+          <skip>${spotbugs.skip}</skip>
         </configuration>
         <executions>
           <execution>

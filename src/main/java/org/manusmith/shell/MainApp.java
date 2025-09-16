@@ -15,20 +15,24 @@ import java.util.ResourceBundle;
 
 public class MainApp extends Application {
 
-    private static Stage primaryStage;
+    private static MainApp instance;
+    private Stage primaryStage;
 
     public static void reload() {
-        try {
-            primaryStage.setScene(loadScene());
-        } catch (IOException e) {
-            e.printStackTrace();
-            Fx.error("Error", "Failed to reload the UI.");
+        if (instance != null && instance.primaryStage != null) {
+            try {
+                instance.primaryStage.setScene(loadScene());
+            } catch (IOException e) {
+                e.printStackTrace();
+                Fx.error("Error", "Failed to reload the UI.");
+            }
         }
     }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        MainApp.primaryStage = primaryStage;
+        instance = this;
+        this.primaryStage = primaryStage;
         primaryStage.setScene(loadScene());
         primaryStage.show();
 
@@ -64,7 +68,9 @@ public class MainApp extends Application {
         FXMLLoader loader = new FXMLLoader(fxmlUrl, bundle);
         Scene scene = new Scene(loader.load(), 800, 600);
 
-        primaryStage.setTitle(bundle.getString("app.title"));
+        if (instance != null && instance.primaryStage != null) {
+            instance.primaryStage.setTitle(bundle.getString("app.title"));
+        }
 
         // Apply the default theme
         org.manusmith.shell.service.ThemeService.getInstance().applyCurrentTheme(scene);

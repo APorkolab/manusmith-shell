@@ -69,9 +69,11 @@ public class QuickConvertController {
 
                     File outDir = new File(file.getParentFile(), "out");
                     if (!outDir.exists()) {
-                        outDir.mkdirs();
+                        if (!outDir.mkdirs()) {
+                            throw new IOException("Failed to create output directory: " + outDir.getAbsolutePath());
+                        }
                     }
-                    String inputName = file.getName().toLowerCase();
+                    String inputName = file.getName().toLowerCase(java.util.Locale.ROOT);
                     String baseName = inputName.replaceFirst("[.][^.]+$", "");
                     String outputFileName;
 
