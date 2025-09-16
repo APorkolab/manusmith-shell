@@ -252,6 +252,13 @@
       <version>3.25.1</version>
       <scope>test</scope>
     </dependency>
+    <!-- Headless JavaFX testing - modern approach -->
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-swing</artifactId>
+      <version>${javafx.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -278,7 +285,20 @@
         <version>3.5.0</version>
         <configuration>
           <useModulePath>false</useModulePath>
-          <argLine>-Djava.awt.headless=true --add-exports javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</argLine>
+          <systemPropertyVariables>
+            <java.awt.headless>false</java.awt.headless>
+            <testfx.robot>awt</testfx.robot>
+            <testfx.headless>false</testfx.headless>
+            <prism.order>sw</prism.order>
+            <prism.text>t2k</prism.text>
+            <prism.lcdtext>false</prism.lcdtext>
+            <prism.subpixeltext>false</prism.subpixeltext>
+          </systemPropertyVariables>
+          <argLine>
+            --add-opens javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+            --add-opens javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+            --add-exports javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+          </argLine>
         </configuration>
       </plugin>
       
