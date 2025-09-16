@@ -48,7 +48,7 @@ jobs:
       with:
         repository: APorkolab/manusmith-engine
         path: manusmith-engine
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PAT_TOKEN }}
         
     - name: Install ManuSmith Engine Dependency
       run: |
@@ -122,7 +122,7 @@ jobs:
       with:
         repository: APorkolab/manusmith-engine
         path: manusmith-engine
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PAT_TOKEN }}
         
     - name: Install ManuSmith Engine Dependency
       shell: bash
@@ -287,7 +287,7 @@ jobs:
       with:
         repository: APorkolab/manusmith-engine
         path: manusmith-engine
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PAT_TOKEN }}
         
     - name: Install ManuSmith Engine Dependency
       run: |

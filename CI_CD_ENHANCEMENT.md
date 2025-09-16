@@ -10,6 +10,7 @@ The CI/CD pipeline has been enhanced to automatically generate **native cross-pl
 - **macOS DMG** installer with obfuscated bytecode
 - **Windows MSI** installer with obfuscated bytecode
 - Matrix-based builds on GitHub Actions (macOS and Windows runners)
+- **Private Repository Access** with Personal Access Token (PAT)
 
 ### 2. Enhanced Security & Permissions
 ```yaml
@@ -157,6 +158,24 @@ on:
 - Multi-architecture support (ARM64, x86_64)
 - Docker containerized builds
 - Performance benchmarking integration
+
+## 🔐 Setup Requirements
+
+### Personal Access Token (PAT) Configuration
+For private `manusmith-engine` repository access:
+
+1. **Generate PAT**:
+   - GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Generate new token with `repo` and `workflow` scopes
+
+2. **Add GitHub Secret**:
+   - Repository Settings → Secrets and variables → Actions
+   - Name: `PAT_TOKEN`
+   - Value: Your generated PAT
+
+3. **Verify Access**:
+   - Pipeline will use PAT to checkout private manusmith-engine repository
+   - Required for all build jobs (test, cross-platform, security)
 
 ---
 
