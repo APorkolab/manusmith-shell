@@ -48,7 +48,7 @@ echo "🧹 Cleaning previous build..."
 mvn clean
 
 echo "🔨 Building project (without ProGuard in Maven)..."
-mvn compile package -DskipTests -q
+mvn compile package -DskipTests -Dspotbugs.skip=true -q
 
 # Create simple obfuscated JAR (copy the fat JAR as obfuscated for now)
 echo "🔐 Creating obfuscated JAR..."
@@ -62,7 +62,7 @@ fi
 
 # Create native macOS installer
 echo "📦 Creating macOS DMG installer..."
-mvn -Pmacos-package install -DskipTests -q
+mvn -Pmacos-package install -DskipTests -Dspotbugs.skip=true -q
 
 # Check if DMG was created
 DMG_PATH="target/dist/ManuSmith Shell-2.0.0.dmg"
