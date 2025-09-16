@@ -152,8 +152,22 @@ jobs:
       shell: cmd
       run: |
         echo 🚀 Building native installer for Windows...
-        .\build-windows.bat
-        echo ✅ Windows build completed
+        echo Current directory before build: %CD%
+        echo Checking if build script exists:
+        if exist "build-windows.bat" (
+          echo build-windows.bat found, executing...
+          call build-windows.bat
+          echo Build script exit code: %ERRORLEVEL%
+          if %ERRORLEVEL% NEQ 0 (
+            echo ❌ Build script failed with exit code %ERRORLEVEL%
+            exit /b %ERRORLEVEL%
+          )
+          echo ✅ Windows build completed successfully
+        ) else (
+          echo ❌ build-windows.bat not found
+          dir *.bat
+          exit /b 1
+        )
 
     - name: Upload Native Package
       uses: actions/upload-artifact@v4
@@ -178,9 +192,26 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: cmd
       run: |
-        echo 📦 Checking created packages:
-        dir target\dist\ 2>nul || echo No dist directory
-        dir target\*.jar 2>nul || echo No JAR files
+        echo 📦 Detailed Windows package verification:
+        echo Current directory: %CD%
+        echo Listing root directory:
+        dir
+        echo Checking if target directory exists:
+        if exist "target" (
+          echo target directory found, listing contents:
+          dir target
+          echo Checking for dist subdirectory:
+          if exist "target\dist" (
+            echo target\dist found, listing contents:
+            dir target\dist
+          ) else (
+            echo target\dist directory does not exist
+          )
+          echo Checking for JAR files in target:
+          dir target\*.jar 2>nul || echo No JAR files found in target
+        ) else (
+          echo target directory does not exist at all
+        )
         echo ✅ Windows package verification completed
 
   release:
