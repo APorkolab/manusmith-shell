@@ -424,9 +424,9 @@ jobs:
           - Build: #${{ github.run_number }}
           - Commit: ${{ github.sha }}
         files: |
-          ./release-assets/*.dmg
-          ./release-assets/*.msi
-          ./release-assets/*-obfuscated.jar
+          ./release-assets/**/*.dmg
+          ./release-assets/**/*.msi
+          ./release-assets/**/*-obfuscated.jar
     
     - name: Release Summary
       run: |
