@@ -47,15 +47,77 @@ fi
 echo "🧹 Cleaning previous build..."
 mvn clean
 
-echo "🔨 Building project with obfuscation..."
+echo "🔨 Building project (without ProGuard in Maven)..."
 mvn compile package -DskipTests -q
 
-# Check if obfuscated JAR was created
-if [ ! -f "target/manusmith-shell-2.0.0-obfuscated.jar" ]; then
+# Create obfuscated JAR using standalone ProGuard
+echo "🔐 Starting ProGuard obfuscation..."
+
+# Create ProGuard configuration
+cat > proguard-config.pro << 'EOF'
+-injars target/manusmith-shell-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+-outjars target/manusmith-shell-2.0.0-obfuscated.jar
+
+-libraryjars <java.home>/jmods/java.base.jmod(!**.jar;!module-info.class)
+-libraryjars <java.home>/jmods/java.desktop.jmod(!**.jar;!module-info.class)
+-libraryjars <java.home>/jmods/javafx.controls.jmod(!**.jar;!module-info.class)
+-libraryjars <java.home>/jmods/javafx.fxml.jmod(!**.jar;!module-info.class)
+
+-keep public class org.manusmith.shell.MainApp {
+    public static void main(java.lang.String[]);
+}
+
+-keep class * extends javafx.application.Application { *; }
+-keep class * extends javafx.fxml.Initializable { *; }
+
+-keep class * {
+    @javafx.fxml.FXML <fields>;
+    @javafx.fxml.FXML <methods>;
+}
+
+-keepclassmembers class * {
+    @javafx.fxml.FXML <fields>;
+    @javafx.fxml.FXML <methods>;
+}
+
+-keep class javafx.** { *; }
+-keep class com.sun.javafx.** { *; }
+-keep class org.manusmith.shell.controller.** { *; }
+-keep class org.manusmith.shell.service.** { *; }
+
+-dontwarn java.desktop/**
+-dontwarn javafx.**
+-dontwarn com.sun.javafx.**
+-dontwarn **
+
+-dontshrink
+-dontoptimize
+-dontnote
+-ignorewarnings
+
+-keepattributes Signature,*Annotation*,InnerClasses,EnclosingMethod
+-adaptresourcefilenames **.fxml,**.css,**.properties
+-adaptresourcefilecontents **.properties,META-INF/MANIFEST.MF
+EOF
+
+# Download ProGuard if not exists
+if [ ! -f "proguard.jar" ]; then
+    echo "📥 Downloading ProGuard..."
+    curl -L -o proguard.zip "https://github.com/Guardsquare/proguard/releases/download/v7.4.2/proguard-7.4.2.zip"
+    unzip -q proguard.zip
+    cp proguard*/lib/proguard.jar .
+    rm -rf proguard* proguard.zip
+fi
+
+# Run ProGuard obfuscation
+java -jar proguard.jar @proguard-config.pro
+
+if [ -f "target/manusmith-shell-2.0.0-obfuscated.jar" ]; then
+    echo "✅ ProGuard obfuscation completed successfully"
+else
     echo "❌ Obfuscated JAR not found. Build may have failed."
     exit 1
 fi
-echo "✅ Obfuscated JAR created"
 
 # Create native macOS installer
 echo "📦 Creating macOS DMG installer..."

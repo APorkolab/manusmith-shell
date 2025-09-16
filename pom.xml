@@ -342,7 +342,8 @@
         </configuration>
       </plugin>
       
-      <!-- ProGuard for code obfuscation -->
+      <!-- ProGuard for code obfuscation (disabled in Maven, handled by build scripts) -->
+      <!-- 
       <plugin>
         <groupId>com.github.wvengen</groupId>
         <artifactId>proguard-maven-plugin</artifactId>
@@ -350,40 +351,14 @@
         <executions>
           <execution>
             <id>obfuscate</id>
-            <phase>package</phase>
+            <phase>none</phase>
             <goals>
               <goal>proguard</goal>
             </goals>
-            <configuration>
-              <proguardVersion>7.3.2</proguardVersion>
-              <injar>${project.build.finalName}-jar-with-dependencies.jar</injar>
-              <outjar>${project.build.finalName}-obfuscated.jar</outjar>
-              <includeDependency>false</includeDependency>
-              <obfuscate>true</obfuscate>
-              <options>
-                <option>-dontshrink</option>
-                <option>-dontoptimize</option>
-                <option>-dontnote</option>
-                <option>-dontwarn **</option>
-                <option>-ignorewarnings</option>
-                <option>-keep class org.manusmith.shell.MainApp { public static void main(java.lang.String[]); }</option>
-                <option>-keep class * extends javafx.application.Application { *; }</option>
-                <option>-keep class * implements java.io.Serializable { *; }</option>
-                <option>-keepclassmembers class * { @javafx.fxml.FXML *; }</option>
-                <option>-keepclassmembers class * extends javafx.scene.control.* { *; }</option>
-                <option>-keep class org.manusmith.shell.controller.* { public *; }</option>
-                <option>-keep class org.manusmith.shell.service.* { public *; }</option>
-                <option>-keepattributes Signature,*Annotation*,InnerClasses,EnclosingMethod</option>
-                <option>-adaptresourcefilenames **.fxml,**.css,**.properties</option>
-                <option>-adaptresourcefilecontents **.properties,META-INF/MANIFEST.MF</option>
-              </options>
-              <libs>
-                <lib>${java.home}/jmods</lib>
-              </libs>
-            </configuration>
           </execution>
         </executions>
       </plugin>
+      -->
     </plugins>
   </build>
   <profiles>
