@@ -22,20 +22,25 @@ fi
 echo "✅ Java version: $JAVA_VERSION"
 
 # Build manusmith-engine first (if not already installed)
-echo "🔧 Checking manusmith-engine dependency..."
-if ! mvn dependency:resolve | grep -q "manusmith-engine-plugin"; then
-    echo "📦 Building manusmith-engine..."
-    if [ -d "../manusmith-engine" ]; then
-        cd ../manusmith-engine
-        mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
-        cd ../manusmith-shell
-        echo "✅ manusmith-engine built and installed"
+# Skip this check in CI environment as engine is pre-installed
+if [ -z "${GITHUB_ACTIONS:-}" ]; then
+    echo "🔧 Checking manusmith-engine dependency..."
+    if ! mvn dependency:resolve | grep -q "manusmith-engine-plugin"; then
+        echo "📦 Building manusmith-engine..."
+        if [ -d "../manusmith-engine" ]; then
+            cd ../manusmith-engine
+            mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
+            cd ../manusmith-shell
+            echo "✅ manusmith-engine built and installed"
+        else
+            echo "❌ manusmith-engine not found. Please clone it to ../manusmith-engine"
+            exit 1
+        fi
     else
-        echo "❌ manusmith-engine not found. Please clone it to ../manusmith-engine"
-        exit 1
+        echo "✅ manusmith-engine already available"
     fi
 else
-    echo "✅ manusmith-engine already available"
+    echo "🎦 Running in CI environment - assuming engine is pre-installed"
 fi
 
 # Clean and build the shell project
@@ -46,7 +51,7 @@ echo "🔨 Building project with obfuscation..."
 mvn compile package -DskipTests -q
 
 # Check if obfuscated JAR was created
-if [ ! -f "target/manusmith-shell-1.0.0-SNAPSHOT-obfuscated.jar" ]; then
+if [ ! -f "target/manusmith-shell-2.0.0-obfuscated.jar" ]; then
     echo "❌ Obfuscated JAR not found. Build may have failed."
     exit 1
 fi

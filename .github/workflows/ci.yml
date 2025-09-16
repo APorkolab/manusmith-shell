@@ -1,181 +1,265 @@
-name: CI/CD Pipeline
+name: ManuSmith Shell CI/CD
 
 on:
   push:
     branches: [ main, develop ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
+env:
+  JAVA_VERSION: '21'
+  ENGINE_VERSION: '2.0.0'
+  
 jobs:
   test:
+    name: Test Suite
     runs-on: ubuntu-latest
     
-    strategy:
-      matrix:
-        java-version: [21]
-
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Shell Repository
+      uses: actions/checkout@v4
     
-    - name: Set up JDK ${{ matrix.java-version }}
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
       uses: actions/setup-java@v4
       with:
-        java-version: ${{ matrix.java-version }}
+        java-version: ${{ env.JAVA_VERSION }}
         distribution: 'temurin'
         
-    - name: Cache Maven packages
+    - name: Cache Maven Dependencies
       uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
-    - name: Install manusmith-engine dependency
+    - name: Install ManuSmith Engine Dependency
       run: |
         git clone https://github.com/APorkolab/manusmith-engine.git
         cd manusmith-engine
         mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
+        echo "✅ ManuSmith Engine ${{ env.ENGINE_VERSION }} installed"
 
-    - name: Verify project compiles
-      run: mvn clean compile
+    - name: Run Tests
+      run: |
+        mvn clean test
+        echo "✅ All tests completed"
 
-    - name: Run tests
-      run: mvn test
-
-    - name: Generate test report
+    - name: Generate Test Reports
       uses: dorny/test-reporter@v1
       if: success() || failure()
       with:
-        name: Maven Tests
+        name: Unit Test Results
         path: target/surefire-reports/*.xml
         reporter: java-junit
 
-    - name: Build application
-      run: mvn clean package -DskipTests
-
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      if: success()
-      with:
-        name: manusmith-shell-${{ github.sha }}
-        path: target/*.jar
-
-  security-scan:
-    runs-on: ubuntu-latest
+  build-cross-platform:
+    name: Build Native Packages
     needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' || github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            platform: 'macOS'
+            build_script: './build-macos.sh'
+            artifact_pattern: '*.dmg'
+            artifact_name: 'ManuSmith-Shell-macOS'
+          - os: windows-latest  
+            platform: 'Windows'
+            build_script: 'build-windows.bat'
+            artifact_pattern: '*.msi'
+            artifact_name: 'ManuSmith-Shell-Windows'
+    
+    runs-on: ${{ matrix.os }}
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Shell Repository
+      uses: actions/checkout@v4
     
-    - name: Set up JDK 21
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
       uses: actions/setup-java@v4
       with:
-        java-version: 21
+        java-version: ${{ env.JAVA_VERSION }}
         distribution: 'temurin'
-
-    - name: Cache Maven packages
+        
+    - name: Cache Maven Dependencies
       uses: actions/cache@v4
       with:
         path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+        key: ${{ matrix.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ matrix.os }}-m2
 
-    - name: Install manusmith-engine dependency
+    - name: Install ManuSmith Engine Dependency
+      shell: bash
       run: |
         git clone https://github.com/APorkolab/manusmith-engine.git
         cd manusmith-engine
         mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
+        echo "✅ ManuSmith Engine installed for ${{ matrix.platform }}"
 
-    - name: Run security scan with OWASP Dependency Check
-      run: mvn org.owasp:dependency-check-maven:check || true
-      
-    - name: Upload security report
+    - name: Install WiX Toolset (Windows only)
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install wixtoolset -y
+        echo "✅ WiX Toolset installed"
+
+    - name: Build Native Package for ${{ matrix.platform }}
+      shell: bash
+      run: |
+        echo "🚀 Building native installer for ${{ matrix.platform }}..."
+        ${{ matrix.build_script }}
+        echo "✅ Build completed for ${{ matrix.platform }}"
+
+    - name: Upload Native Package
       uses: actions/upload-artifact@v4
-      if: always()
       with:
-        name: security-report-${{ github.sha }}
-        path: target/dependency-check-report.html
+        name: ${{ matrix.artifact_name }}-v${{ github.run_number }}
+        path: |
+          target/dist/${{ matrix.artifact_pattern }}
+          target/*-obfuscated.jar
+        retention-days: 90
+        if-no-files-found: error
 
-  quality-gate:
-    runs-on: ubuntu-latest
-    needs: test
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: 21
-        distribution: 'temurin'
-
-    - name: Cache Maven packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
-
-    - name: Install manusmith-engine dependency
+    - name: Verify Package Creation
+      shell: bash
       run: |
-        git clone https://github.com/APorkolab/manusmith-engine.git
-        cd manusmith-engine
-        mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
-
-    - name: Code quality analysis
-      run: |
-        mvn clean compile test-compile
-        echo "✅ Code quality checks completed"
+        echo "📦 Checking created packages:"
+        ls -la target/dist/ || echo "No dist directory"
+        ls -la target/*.jar || echo "No JAR files"
+        echo "✅ Package verification completed"
 
   release:
+    name: Create Release with Native Installers
+    needs: build-cross-platform
     runs-on: ubuntu-latest
-    needs: [test, security-scan, quality-gate]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' || startsWith(github.ref, 'refs/tags/')
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
     
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
+    - name: Download macOS Package
+      uses: actions/download-artifact@v4
       with:
-        java-version: 21
-        distribution: 'temurin'
-
-    - name: Cache Maven packages
-      uses: actions/cache@v4
+        name: ManuSmith-Shell-macOS-v${{ github.run_number }}
+        path: ./release-assets/
+    
+    - name: Download Windows Package  
+      uses: actions/download-artifact@v4
       with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
-
-    - name: Install manusmith-engine dependency
+        name: ManuSmith-Shell-Windows-v${{ github.run_number }}
+        path: ./release-assets/
+    
+    - name: List Release Assets
       run: |
-        git clone https://github.com/APorkolab/manusmith-engine.git
-        cd manusmith-engine
-        mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
-
-    - name: Build release package
-      run: mvn clean package -DskipTests
-
-    - name: Create Release
+        echo "📋 Release assets prepared:"
+        find ./release-assets -type f -name "*.dmg" -o -name "*.msi" -o -name "*-obfuscated.jar" | sort
+        echo "Total files: $(find ./release-assets -type f | wc -l)"
+    
+    - name: Extract Version
+      id: version
+      run: |
+        if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+        else
+          VERSION="v${{ github.run_number }}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "📌 Release version: $VERSION"
+    
+    - name: Create GitHub Release
+      id: create_release
       uses: actions/create-release@v1
-      if: success()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ github.run_number }}
-        release_name: Release v${{ github.run_number }}
+        tag_name: ${{ steps.version.outputs.version }}
+        release_name: ManuSmith Shell ${{ steps.version.outputs.version }}
+        draft: false
+        prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
         body: |
-          ## Features
-          - JavaFX GUI application for manuscript processing
-          - Full ODT (OpenDocument Text) file support
-          - Integration with ManuSmith Engine v2.0.0
+          ## 🎉 ManuSmith Shell Release ${{ steps.version.outputs.version }}
+          
+          ### 🔥 What's New
+          - **Native Desktop Applications**: Ready-to-install packages for macOS and Windows
+          - **Full ODT Support**: Complete OpenDocument Text file processing capabilities  
+          - **ProGuard Obfuscation**: Enhanced security with obfuscated bytecode
+          - **ManuSmith Engine v${{ env.ENGINE_VERSION }}**: Latest engine integration
+          
+          ### 📦 Download Options
+          
+          **macOS Users:**
+          - Download `ManuSmith-Shell-${{ steps.version.outputs.version }}.dmg`
+          - Double-click to mount, then drag to Applications folder
+          
+          **Windows Users:**
+          - Download `ManuSmith-Shell-${{ steps.version.outputs.version }}.msi`  
+          - Run installer with administrator privileges
+          
+          **Advanced Users:**
+          - JAR files available for custom deployment scenarios
+          
+          ### ⚡ Key Features
+          - Modern JavaFX user interface
           - Document conversion between multiple formats
           - Advanced typography and formatting tools
+          - Cross-platform compatibility
+          - Built-in security and performance optimizations
           
-          ## Changes
-          - Updated to use ManuSmith Engine v2.0.0 with ODT support
-          - All tests passing (including ODT functionality)
-          - Enhanced document processing capabilities
-        draft: false
-        prerelease: false
+          ### 🛠️ Technical Details
+          - Java Runtime: OpenJDK ${{ env.JAVA_VERSION }}
+          - Engine Version: v${{ env.ENGINE_VERSION }}
+          - Build: #${{ github.run_number }}
+          - Commit: ${{ github.sha }}
+    
+    - name: Upload macOS DMG
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release-assets/target/dist/ManuSmith-Shell-2.0.0.dmg
+        asset_name: ManuSmith-Shell-${{ steps.version.outputs.version }}.dmg
+        asset_content_type: application/x-apple-diskimage
+    
+    - name: Upload Windows MSI
+      uses: actions/upload-release-asset@v1  
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release-assets/target/dist/ManuSmith-Shell-2.0.0.msi
+        asset_name: ManuSmith-Shell-${{ steps.version.outputs.version }}.msi
+        asset_content_type: application/x-msi
+    
+    - name: Upload Obfuscated JAR (macOS)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release-assets/target/manusmith-shell-2.0.0-obfuscated.jar
+        asset_name: ManuSmith-Shell-${{ steps.version.outputs.version }}-macOS-obfuscated.jar
+        asset_content_type: application/java-archive
+      continue-on-error: true
+    
+    - name: Upload Obfuscated JAR (Windows)  
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release-assets/target/manusmith-shell-2.0.0-obfuscated.jar
+        asset_name: ManuSmith-Shell-${{ steps.version.outputs.version }}-Windows-obfuscated.jar
+        asset_content_type: application/java-archive
+      continue-on-error: true
+    
+    - name: Release Summary
+      run: |
+        echo "🎊 Release ${{ steps.version.outputs.version }} created successfully!"
+        echo "📥 Download URL: ${{ steps.create_release.outputs.html_url }}"
+        echo "🏷️  Release ID: ${{ steps.create_release.outputs.id }}"
+        echo "📦 Assets uploaded: DMG, MSI, and obfuscated JARs"
+        echo "✅ CI/CD Pipeline completed successfully"

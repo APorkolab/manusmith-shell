@@ -34,21 +34,26 @@ if errorlevel 1 (
 )
 
 REM Build manusmith-engine first (if not already installed)
-echo 🔧 Checking manusmith-engine dependency...
-mvn dependency:resolve | findstr "manusmith-engine-plugin" >nul
-if errorlevel 1 (
-    echo 📦 Building manusmith-engine...
-    if exist "..\manusmith-engine" (
-        cd ..\manusmith-engine
-        mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
-        cd ..\manusmith-shell
-        echo ✅ manusmith-engine built and installed
+REM Skip this check in CI environment as engine is pre-installed
+if not defined GITHUB_ACTIONS (
+    echo 🔧 Checking manusmith-engine dependency...
+    mvn dependency:resolve | findstr "manusmith-engine-plugin" >nul
+    if errorlevel 1 (
+        echo 📦 Building manusmith-engine...
+        if exist "..\manusmith-engine" (
+            cd ..\manusmith-engine
+            mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
+            cd ..\manusmith-shell
+            echo ✅ manusmith-engine built and installed
+        ) else (
+            echo ❌ manusmith-engine not found. Please clone it to ..\manusmith-engine
+            exit /b 1
+        )
     ) else (
-        echo ❌ manusmith-engine not found. Please clone it to ..\manusmith-engine
-        exit /b 1
+        echo ✅ manusmith-engine already available
     )
 ) else (
-    echo ✅ manusmith-engine already available
+    echo 🎦 Running in CI environment - assuming engine is pre-installed
 )
 
 REM Clean and build the shell project
@@ -59,7 +64,7 @@ echo 🔨 Building project with obfuscation...
 mvn compile package -DskipTests -q
 
 REM Check if obfuscated JAR was created
-if not exist "target\manusmith-shell-1.0.0-SNAPSHOT-obfuscated.jar" (
+if not exist "target\manusmith-shell-2.0.0-obfuscated.jar" (
     echo ❌ Obfuscated JAR not found. Build may have failed.
     exit /b 1
 )
@@ -87,4 +92,4 @@ if exist %MSI_PATH% (
 )
 
 echo ✅ Build completed successfully!
-pause
+REM pause command removed for CI compatibility
