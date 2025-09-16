@@ -177,6 +177,23 @@ For private `manusmith-engine` repository access:
    - Pipeline will use PAT to checkout private manusmith-engine repository
    - Required for all build jobs (test, cross-platform, security)
 
+### NVD API Key Configuration
+For accelerated security vulnerability scanning:
+
+1. **Obtain NVD API Key**:
+   - Visit: https://nvd.nist.gov/developers/request-an-api-key
+   - Request a free API key for faster vulnerability database updates
+
+2. **Add GitHub Secret**:
+   - Repository Settings → Secrets and variables → Actions
+   - Name: `NVD_API_KEY`
+   - Value: Your NVD API key
+
+3. **Benefits**:
+   - **10x faster** vulnerability database updates
+   - Reduced CI/CD pipeline execution time
+   - Higher API rate limits (2000 requests/30s vs 10 requests/30s)
+
 ---
 
 **🎉 Result**: The ManuSmith Shell project now has a fully automated CI/CD pipeline that generates, secures, and distributes native cross-platform installers automatically on every main branch update!

@@ -299,10 +299,12 @@ jobs:
         echo "✅ ManuSmith Engine installed for security scan"
 
     - name: Run OWASP Dependency Check
+      env:
+        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
       run: |
         mvn clean compile
-        mvn org.owasp:dependency-check-maven:check -Dformat=ALL || true
-        echo "🔍 Security scan completed"
+        mvn org.owasp:dependency-check-maven:check -Dformat=ALL -Dnvd.api.key=${{ secrets.NVD_API_KEY }} || true
+        echo "🔍 Security scan completed with NVD API acceleration"
         
     - name: Upload Security Report
       uses: actions/upload-artifact@v4

@@ -29,6 +29,7 @@
     <picocli.version>4.7.5</picocli.version>
     <jackson.version>2.16.1</jackson.version>
     <micrometer.version>1.12.1</micrometer.version>
+    <dependency-check.version>10.0.4</dependency-check.version>
   </properties>
   <dependencies>
     <!-- JavaFX dev-time; futtatásnál classifier kell (mac/win/linux) vagy javafx-maven-plugin -->
@@ -301,6 +302,44 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      
+      <!-- OWASP Dependency Check for security scanning -->
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>${dependency-check.version}</version>
+        <configuration>
+          <!-- NVD API Key will be provided via -Dnvd.api.key system property -->
+          <nvdApiKeyEnvironmentVariable>NVD_API_KEY</nvdApiKeyEnvironmentVariable>
+          <nvdApiDelay>2000</nvdApiDelay>
+          <nvdMaxRetryCount>10</nvdMaxRetryCount>
+          <nvdValidForHours>24</nvdValidForHours>
+          
+          <!-- Output formats -->
+          <formats>
+            <format>HTML</format>
+            <format>JSON</format>
+            <format>XML</format>
+          </formats>
+          
+          <!-- Performance optimizations -->
+          <centralAnalyzerEnabled>true</centralAnalyzerEnabled>
+          <archiveAnalyzerEnabled>false</archiveAnalyzerEnabled>
+          <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+          <jarAnalyzerEnabled>true</jarAnalyzerEnabled>
+          <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+          <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
+          
+          <!-- Fail build settings -->
+          <failBuildOnCVSS>8</failBuildOnCVSS>
+          <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
+          
+          <!-- Suppression file for false positives -->
+          <suppressionFiles>
+            <suppressionFile>dependency-check-suppressions.xml</suppressionFile>
+          </suppressionFiles>
+        </configuration>
       </plugin>
       
       <!-- ProGuard for code obfuscation -->
