@@ -8,6 +8,15 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  packages: read
+  actions: read
+  checks: write
+  pull-requests: write
+  security-events: write
+  statuses: write
+
 env:
   JAVA_VERSION: '21'
   ENGINE_VERSION: '2.0.0'
@@ -171,14 +180,15 @@ jobs:
     
     - name: Create GitHub Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.version.outputs.version }}
-        release_name: ManuSmith Shell ${{ steps.version.outputs.version }}
+        name: ManuSmith Shell ${{ steps.version.outputs.version }}
         draft: false
         prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        generate_release_notes: false
         body: |
           ## 🎉 ManuSmith Shell Release ${{ steps.version.outputs.version }}
           
@@ -213,53 +223,63 @@ jobs:
           - Engine Version: v${{ env.ENGINE_VERSION }}
           - Build: #${{ github.run_number }}
           - Commit: ${{ github.sha }}
-    
-    - name: Upload macOS DMG
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release-assets/target/dist/ManuSmith-Shell-2.0.0.dmg
-        asset_name: ManuSmith-Shell-${{ steps.version.outputs.version }}.dmg
-        asset_content_type: application/x-apple-diskimage
-    
-    - name: Upload Windows MSI
-      uses: actions/upload-release-asset@v1  
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release-assets/target/dist/ManuSmith-Shell-2.0.0.msi
-        asset_name: ManuSmith-Shell-${{ steps.version.outputs.version }}.msi
-        asset_content_type: application/x-msi
-    
-    - name: Upload Obfuscated JAR (macOS)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release-assets/target/manusmith-shell-2.0.0-obfuscated.jar
-        asset_name: ManuSmith-Shell-${{ steps.version.outputs.version }}-macOS-obfuscated.jar
-        asset_content_type: application/java-archive
-      continue-on-error: true
-    
-    - name: Upload Obfuscated JAR (Windows)  
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release-assets/target/manusmith-shell-2.0.0-obfuscated.jar
-        asset_name: ManuSmith-Shell-${{ steps.version.outputs.version }}-Windows-obfuscated.jar
-        asset_content_type: application/java-archive
-      continue-on-error: true
+        files: |
+          ./release-assets/target/dist/*.dmg
+          ./release-assets/target/dist/*.msi
+          ./release-assets/target/*-obfuscated.jar
     
     - name: Release Summary
       run: |
         echo "🎊 Release ${{ steps.version.outputs.version }} created successfully!"
-        echo "📥 Download URL: ${{ steps.create_release.outputs.html_url }}"
+        echo "📥 Download URL: ${{ steps.create_release.outputs.url }}"
         echo "🏷️  Release ID: ${{ steps.create_release.outputs.id }}"
         echo "📦 Assets uploaded: DMG, MSI, and obfuscated JARs"
         echo "✅ CI/CD Pipeline completed successfully"
+
+  security-scan:
+    name: Security Analysis
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        
+    - name: Cache Maven Dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Install ManuSmith Engine Dependency
+      run: |
+        git clone https://github.com/APorkolab/manusmith-engine.git
+        cd manusmith-engine
+        mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
+        echo "✅ ManuSmith Engine installed for security scan"
+
+    - name: Run OWASP Dependency Check
+      run: |
+        mvn clean compile
+        mvn org.owasp:dependency-check-maven:check -Dformat=ALL || true
+        echo "🔍 Security scan completed"
+        
+    - name: Upload Security Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-report-${{ github.run_number }}
+        path: |
+          target/dependency-check-report.html
+          target/dependency-check-report.json
+          target/dependency-check-report.xml
+        retention-days: 30
+        if-no-files-found: warn
