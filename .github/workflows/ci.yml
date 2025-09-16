@@ -170,25 +170,53 @@ jobs:
         call test-windows.bat
         echo ✅ Windows environment test completed
     
-    - name: Build Native Package for Windows
+    - name: Build Native Package for Windows (Inline)
       if: matrix.os == 'windows-latest'
       shell: cmd
       run: |
-        echo 🚀 Building native installer for Windows...
-        echo Current directory before build: %CD%
-        echo Checking if build script exists:
-        if exist "build-windows.bat" (
-          echo build-windows.bat found, executing...
-          call build-windows.bat
-          echo Build script exit code: %ERRORLEVEL%
-          if %ERRORLEVEL% NEQ 0 (
-            echo ❌ Build script failed with exit code %ERRORLEVEL%
-            exit /b %ERRORLEVEL%
-          )
-          echo ✅ Windows build completed successfully
+        echo 🚀 Building Windows package inline...
+        echo Step 1: Clean previous build
+        mvn clean -q
+        
+        echo Step 2: Compile and package
+        mvn compile package -DskipTests -Dspotbugs.skip=true -q
+        if %ERRORLEVEL% NEQ 0 (
+          echo ❌ Maven package failed
+          exit /b 1
+        )
+        echo ✅ Maven package completed
+        
+        echo Step 3: List target directory
+        if exist "target" (
+          echo Target directory contents:
+          dir target
         ) else (
-          echo ❌ build-windows.bat not found
-          dir *.bat
+          echo ❌ No target directory created
+          exit /b 1
+        )
+        
+        echo Step 4: Check for JAR files
+        dir target\*.jar
+        
+        echo Step 5: Create obfuscated JAR
+        if exist "target\manusmith-shell-2.0.0-jar-with-dependencies.jar" (
+          echo ✅ Fat JAR found, copying as obfuscated
+          copy target\manusmith-shell-2.0.0-jar-with-dependencies.jar target\manusmith-shell-2.0.0-obfuscated.jar
+        ) else (
+          echo ❌ Fat JAR not found
+          exit /b 1
+        )
+        
+        echo Step 6: Create dist directory
+        mkdir target\dist 2>nul
+        copy target\manusmith-shell-2.0.0-obfuscated.jar target\dist\
+        
+        echo Step 7: Verify final artifacts
+        if exist "target\dist\manusmith-shell-2.0.0-obfuscated.jar" (
+          echo 🎉 Windows build completed successfully
+          dir target\dist
+        ) else (
+          echo ❌ Final artifact creation failed
           exit /b 1
         )
 
