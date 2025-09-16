@@ -390,11 +390,6 @@
     <!-- Windows native packaging -->
     <profile>
       <id>windows-package</id>
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
       <build>
         <plugins>
           <plugin>
@@ -419,7 +414,6 @@
                   <type>MSI</type>
                   <input>${project.build.directory}</input>
                   <destination>${project.build.directory}/dist</destination>
-                  <winIcon>src/main/resources/icons/manusmith.ico</winIcon>
                   <winMenu>true</winMenu>
                   <winShortcut>true</winShortcut>
                   <winShortcutPrompt>true</winShortcutPrompt>
@@ -442,11 +436,6 @@
     <!-- macOS native packaging -->
     <profile>
       <id>macos-package</id>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
       <build>
         <plugins>
           <plugin>
@@ -471,7 +460,6 @@
                   <type>DMG</type>
                   <input>${project.build.directory}</input>
                   <destination>${project.build.directory}/dist</destination>
-                  <macIcon>src/main/resources/icons/manusmith.icns</macIcon>
                   <macPackageName>org.manusmith.shell</macPackageName>
                   <macPackageIdentifier>org.manusmith.shell</macPackageIdentifier>
                   <macPackageSigningPrefix>org.manusmith</macPackageSigningPrefix>

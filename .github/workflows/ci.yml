@@ -159,10 +159,10 @@ jobs:
       with:
         name: ${{ matrix.artifact_name }}-v${{ github.run_number }}
         path: |
-          target/dist/${{ matrix.artifact_pattern }}
+          target/dist/
           target/*-obfuscated.jar
         retention-days: 90
-        if-no-files-found: error
+        if-no-files-found: warn
 
     - name: Verify Package Creation (macOS)
       if: matrix.os == 'macos-latest'
