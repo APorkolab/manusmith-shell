@@ -59,9 +59,9 @@ jobs:
 
     - name: Run Tests
       env:
-        JAVA_OPTS: "-Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw"
+        JAVA_OPTS: "-Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw"
       run: |
-        mvn clean test -Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw
+        mvn clean test -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw
         echo "✅ All tests completed"
         
     - name: Verify Test Reports
