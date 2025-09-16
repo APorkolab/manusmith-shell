@@ -593,17 +593,7 @@
                   <type>DMG</type>
                   <input>${project.build.directory}</input>
                   <destination>${project.build.directory}/dist</destination>
-                  <modulePaths>
-                    <modulePath>${project.build.directory}/javafx-mods</modulePath>
-                  </modulePaths>
-                  <addModules>
-                    <addModule>javafx.controls</addModule>
-                    <addModule>javafx.fxml</addModule>
-                    <addModule>javafx.base</addModule>
-                    <addModule>javafx.graphics</addModule>
-                    <addModule>java.desktop</addModule>
-                    <addModule>java.logging</addModule>
-                  </addModules>
+                  <runtimeImage>${java.home}</runtimeImage>
                   <macPackageName>org.manusmith.shell</macPackageName>
                   <macPackageIdentifier>org.manusmith.shell</macPackageIdentifier>
                   <macPackageSigningPrefix>org.manusmith</macPackageSigningPrefix>
