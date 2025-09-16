@@ -109,7 +109,7 @@ public class ThemeService {
             
             if (osName.contains("mac")) {
                 // macOS system theme detection
-                Process process = Runtime.getRuntime().exec("defaults read -g AppleInterfaceStyle");
+                Process process = new ProcessBuilder("defaults", "read", "-g", "AppleInterfaceStyle").start();
                 process.waitFor();
                 
                 if (process.exitValue() == 0) {
@@ -123,9 +123,9 @@ public class ThemeService {
                 }
             } else if (osName.contains("win")) {
                 // Windows 10/11 system theme detection
-                Process process = Runtime.getRuntime().exec(
-                    "reg query HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v AppsUseLightTheme"
-                );
+                Process process = new ProcessBuilder("reg", "query", 
+                    "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 
+                    "/v", "AppsUseLightTheme").start();
                 process.waitFor();
                 
                 if (process.exitValue() == 0) {

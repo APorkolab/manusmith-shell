@@ -63,7 +63,7 @@ public class MainApp extends Application {
         // Load saved language or use default
         PreferencesService preferencesService = new PreferencesService();
         String langCode = preferencesService.getLanguage();
-        Locale locale = (langCode != null) ? new Locale(langCode) : Locale.getDefault();
+        Locale locale = (langCode != null) ? Locale.forLanguageTag(langCode) : Locale.getDefault();
 
         // Load the resource bundle
         ResourceBundle bundle = ResourceBundle.getBundle("i18n.messages", locale);

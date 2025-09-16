@@ -12,6 +12,7 @@ import org.manusmith.shell.service.EngineBridge;
 import org.manusmith.shell.service.StatusService;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class QuickConvertController {

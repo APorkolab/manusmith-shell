@@ -22,7 +22,7 @@ public class DragDropHandler {
     private final String[] allowedExtensions;
     
     public DragDropHandler(Consumer<List<File>> onFilesDropped) {
-        this(onFilesDropped, null);
+        this(onFilesDropped, (String[]) null);
     }
     
     public DragDropHandler(Consumer<List<File>> onFilesDropped, String... allowedExtensions) {
