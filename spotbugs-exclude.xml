@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
-  <!-- Suppress all EI_EXPOSE_REP and EI_EXPOSE_REP2 warnings - common in data classes -->
+  <!-- Suppress EI_EXPOSE_REP warnings - common in data transfer objects -->
   <Match>
     <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
   </Match>
   
-  <!-- Suppress static field access warnings -->
-  <Match>
-    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
-  </Match>
-  
-  <!-- Suppress uncalled private method warnings - these are often FXML event handlers -->
+  <!-- Suppress uncalled private method warnings - often FXML event handlers -->
   <Match>
     <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
-  </Match>
-  
-  <!-- Suppress default encoding warnings for now -->
-  <Match>
-    <Bug pattern="DM_DEFAULT_ENCODING" />
   </Match>
   
   <!-- Suppress case conversion warnings -->
@@ -25,14 +15,9 @@
     <Bug pattern="DM_CONVERT_CASE" />
   </Match>
   
-  <!-- Suppress constructor and exception warnings -->
+  <!-- Suppress exception catch warnings for defensive programming -->
   <Match>
-    <Bug pattern="CT_CONSTRUCTOR_THROW,REC_CATCH_EXCEPTION" />
-  </Match>
-  
-  <!-- Suppress return value ignored warnings -->
-  <Match>
-    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+    <Bug pattern="REC_CATCH_EXCEPTION" />
   </Match>
   
   <!-- Suppress unsafe getResource warnings -->
@@ -40,14 +25,25 @@
     <Bug pattern="UI_INHERITANCE_UNSAFE_GETRESOURCE" />
   </Match>
   
-  <!-- Suppress singleton expose rep warnings -->
+  <!-- Suppress singleton expose warnings -->
   <Match>
     <Bug pattern="MS_EXPOSE_REP" />
   </Match>
   
-  <!-- Suppress method call in constructor -->
+  <!-- Suppress constructor method call warnings -->
   <Match>
     <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR" />
+  </Match>
+  
+  <!-- Suppress constructor throw warnings -->
+  <Match>
+    <Bug pattern="CT_CONSTRUCTOR_THROW" />
+  </Match>
+  
+  <!-- Suppress return value ignored for low-priority cases -->
+  <Match>
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+    <Priority value="3" />
   </Match>
   
   <!-- Suppress GC call warning -->

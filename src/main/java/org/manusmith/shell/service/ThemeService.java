@@ -130,15 +130,15 @@ public class ThemeService {
                 
                 if (process.exitValue() == 0) {
                     // Check registry value (0 = dark, 1 = light)
-                    java.util.Scanner scanner = new java.util.Scanner(process.getInputStream());
-                    while (scanner.hasNextLine()) {
-                        String line = scanner.nextLine();
-                        if (line.contains("AppsUseLightTheme") && line.contains("0x0")) {
-                            logger.debug("Windows dark mode detected");
-                            return Theme.MATERIAL_DARK;
+                    try (java.util.Scanner scanner = new java.util.Scanner(process.getInputStream(), java.nio.charset.StandardCharsets.UTF_8)) {
+                        while (scanner.hasNextLine()) {
+                            String line = scanner.nextLine();
+                            if (line.contains("AppsUseLightTheme") && line.contains("0x0")) {
+                                logger.debug("Windows dark mode detected");
+                                return Theme.MATERIAL_DARK;
+                            }
                         }
                     }
-                    scanner.close();
                 }
                 
                 logger.debug("Windows light mode detected or detection failed");

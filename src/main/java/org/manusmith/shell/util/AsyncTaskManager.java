@@ -117,10 +117,9 @@ public class AsyncTaskManager {
         logger.debug("Memory usage in {}: {:.1f}% ({} MB used, {} MB free)", 
                 context, memoryUsagePercent, usedMemory / (1024 * 1024), freeMemory / (1024 * 1024));
         
-        // Suggest GC if memory usage is high
+        // Log high memory usage (removed explicit GC call per SpotBugs recommendation)
         if (memoryUsagePercent > 85) {
-            logger.info("High memory usage detected ({}%), suggesting garbage collection", memoryUsagePercent);
-            System.gc();
+            logger.warn("High memory usage detected ({}%) in context: {}", memoryUsagePercent, context);
         }
     }
     

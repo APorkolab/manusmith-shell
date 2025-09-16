@@ -228,6 +228,7 @@
           <threshold>Low</threshold>
           <failOnError>false</failOnError>
           <skip>${spotbugs.skip}</skip>
+          <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
         </configuration>
         <executions>
           <execution>

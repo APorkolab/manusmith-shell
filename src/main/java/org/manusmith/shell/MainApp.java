@@ -15,23 +15,32 @@ import java.util.ResourceBundle;
 
 public class MainApp extends Application {
 
-    private static MainApp instance;
+    private static volatile MainApp instance;
     private Stage primaryStage;
 
     public static void reload() {
-        if (instance != null && instance.primaryStage != null) {
+        MainApp currentInstance = getInstance();
+        if (currentInstance != null && currentInstance.primaryStage != null) {
             try {
-                instance.primaryStage.setScene(loadScene());
+                currentInstance.primaryStage.setScene(loadScene());
             } catch (IOException e) {
                 e.printStackTrace();
                 Fx.error("Error", "Failed to reload the UI.");
             }
         }
     }
+    
+    public static MainApp getInstance() {
+        return instance;
+    }
+    
+    private static synchronized void setInstance(MainApp app) {
+        instance = app;
+    }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        instance = this;
+        setInstance(this);
         this.primaryStage = primaryStage;
         primaryStage.setScene(loadScene());
         primaryStage.show();
