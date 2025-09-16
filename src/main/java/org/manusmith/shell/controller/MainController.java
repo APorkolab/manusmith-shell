@@ -7,6 +7,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.manusmith.shell.service.FileDialogs;
 import org.manusmith.shell.service.PreferencesService;
 import org.manusmith.shell.service.StatusService;
@@ -106,9 +107,12 @@ public class MainController {
     @FXML
     private void onToggleTheme() {
         // Toggle between light and dark theme
-        org.manusmith.shell.service.ThemeService.getInstance().toggleTheme(
-            ((Stage) languageSelector.getScene().getWindow()).getScene()
-        );
-        StatusService.getInstance().updateStatus("Theme toggled.");
+        Window window = languageSelector.getScene().getWindow();
+        if (window instanceof Stage stage) {
+            org.manusmith.shell.service.ThemeService.getInstance().toggleTheme(stage.getScene());
+            StatusService.getInstance().updateStatus("Theme toggled.");
+        } else {
+            StatusService.getInstance().updateStatus("Cannot toggle theme - invalid window type.");
+        }
     }
 }

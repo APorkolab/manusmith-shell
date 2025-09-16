@@ -60,6 +60,26 @@ else
     exit 1
 fi
 
+# Download JavaFX SDK if not present
+JAVAFX_VERSION="22.0.2"
+JAVAFX_DIR="javafx-sdk-${JAVAFX_VERSION}"
+echo "📥 Checking for JavaFX SDK..."
+if [ ! -d "$JAVAFX_DIR" ]; then
+    echo "📦 Downloading JavaFX SDK for macOS..."
+    curl -L -o javafx-sdk-macos.zip "https://download2.gluonhq.com/openjfx/22.0.2/openjfx-22.0.2_osx-aarch64_bin-sdk.zip"
+    unzip -q javafx-sdk-macos.zip
+    rm javafx-sdk-macos.zip
+    echo "✅ JavaFX SDK downloaded and extracted"
+else
+    echo "✅ JavaFX SDK already available"
+fi
+
+# Copy JavaFX modules to target directory
+echo "📋 Copying JavaFX modules..."
+mkdir -p target/javafx-mods
+cp "$JAVAFX_DIR/lib/"*.jar target/javafx-mods/
+echo "✅ JavaFX modules copied to target directory"
+
 # Create native macOS installer
 echo "📦 Creating macOS DMG installer..."
 mvn -Pmacos-package install -DskipTests -Dspotbugs.skip=true -q

@@ -540,6 +540,35 @@
     <!-- macOS native packaging -->
     <profile>
       <id>macos-package</id>
+      <properties>
+        <javafx.platform>mac-aarch64</javafx.platform>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-controls</artifactId>
+          <version>${javafx.version}</version>
+          <classifier>${javafx.platform}</classifier>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-fxml</artifactId>
+          <version>${javafx.version}</version>
+          <classifier>${javafx.platform}</classifier>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-base</artifactId>
+          <version>${javafx.version}</version>
+          <classifier>${javafx.platform}</classifier>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-graphics</artifactId>
+          <version>${javafx.version}</version>
+          <classifier>${javafx.platform}</classifier>
+        </dependency>
+      </dependencies>
       <build>
         <plugins>
           <plugin>
@@ -560,16 +589,27 @@
                   <copyright>© 2025 ManuSmith. All rights reserved.</copyright>
                   <description>Professional manuscript processing tool with ODT support</description>
                   <mainClass>org.manusmith.shell.MainApp</mainClass>
-                  <mainJar>${project.build.finalName}-obfuscated.jar</mainJar>
+                  <mainJar>${project.build.finalName}-jar-with-dependencies.jar</mainJar>
                   <type>DMG</type>
                   <input>${project.build.directory}</input>
                   <destination>${project.build.directory}/dist</destination>
+                  <modulePaths>
+                    <modulePath>${project.build.directory}/javafx-mods</modulePath>
+                  </modulePaths>
+                  <addModules>
+                    <addModule>javafx.controls</addModule>
+                    <addModule>javafx.fxml</addModule>
+                    <addModule>javafx.base</addModule>
+                    <addModule>javafx.graphics</addModule>
+                    <addModule>java.desktop</addModule>
+                    <addModule>java.logging</addModule>
+                  </addModules>
                   <macPackageName>org.manusmith.shell</macPackageName>
                   <macPackageIdentifier>org.manusmith.shell</macPackageIdentifier>
                   <macPackageSigningPrefix>org.manusmith</macPackageSigningPrefix>
                   <macSign>false</macSign>
                   <macBundleName>ManuSmith Shell</macBundleName>
-              <macAppCategory>public.app-category.productivity</macAppCategory>
+                  <macAppCategory>public.app-category.productivity</macAppCategory>
                   <javaOptions>
                     <option>-Xmx2048m</option>
                     <option>-Djava.awt.headless=false</option>
@@ -577,8 +617,8 @@
                     <option>-Dapple.laf.useScreenMenuBar=true</option>
                     <option>-Xdock:name=ManuSmith Shell</option>
                     <option>-Dcom.apple.macos.useScreenMenuBar=true</option>
-                    <option>--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</option>
-                    <option>--add-exports=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</option>
+                    <option>-Dprism.order=sw</option>
+                    <option>-Djavafx.animation.fullspeed=true</option>
                   </javaOptions>
                 </configuration>
               </execution>
