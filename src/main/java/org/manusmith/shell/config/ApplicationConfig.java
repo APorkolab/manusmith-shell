@@ -1,5 +1,6 @@
 package org.manusmith.shell.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -13,6 +14,7 @@ import java.util.Map;
 /**
  * Application configuration class that represents the structure of application.yml
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ApplicationConfig {
 
     @Valid

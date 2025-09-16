@@ -71,9 +71,11 @@ public class ConfigurationService {
             expandSystemProperties();
             
             logger.info("Configuration loaded successfully");
-        } catch (IOException e) {
-            logger.error("Failed to load configuration", e);
-            throw new RuntimeException("Configuration loading failed", e);
+        } catch (Exception e) {
+            logger.error("Failed to load configuration, using defaults", e);
+            // Create a minimal working configuration as fallback
+            config = createDefaultConfiguration();
+            logger.info("Using fallback default configuration");
         }
     }
 
@@ -173,5 +175,76 @@ public class ConfigurationService {
 
     public ApplicationConfig.SecurityConfig getSecurityConfig() {
         return config.getSecurity();
+    }
+    
+    /**
+     * Creates a minimal default configuration when YAML loading fails
+     */
+    private ApplicationConfig createDefaultConfiguration() {
+        ApplicationConfig defaultConfig = new ApplicationConfig();
+        
+        // Application info
+        ApplicationConfig.ApplicationInfo appInfo = new ApplicationConfig.ApplicationInfo();
+        appInfo.setName("ManuSmith Shell");
+        appInfo.setVersion("2.0.0");
+        appInfo.setDescription("Professional manuscript processing tool");
+        defaultConfig.setApplication(appInfo);
+        
+        // UI config
+        ApplicationConfig.UiConfig uiConfig = new ApplicationConfig.UiConfig();
+        ApplicationConfig.UiConfig.ThemeConfig themeConfig = new ApplicationConfig.UiConfig.ThemeConfig();
+        themeConfig.setDefaultTheme("light");
+        themeConfig.setAllowUserToggle(true);
+        uiConfig.setTheme(themeConfig);
+        
+        ApplicationConfig.UiConfig.WindowConfig windowConfig = new ApplicationConfig.UiConfig.WindowConfig();
+        windowConfig.setDefaultWidth(1000);
+        windowConfig.setDefaultHeight(700);
+        windowConfig.setMinWidth(800);
+        windowConfig.setMinHeight(600);
+        windowConfig.setResizable(true);
+        uiConfig.setWindow(windowConfig);
+        
+        ApplicationConfig.UiConfig.LocaleConfig localeConfig = new ApplicationConfig.UiConfig.LocaleConfig();
+        localeConfig.setDefaultLocale("en");
+        localeConfig.setSupported(java.util.List.of("en", "hu"));
+        uiConfig.setLocale(localeConfig);
+        
+        defaultConfig.setUi(uiConfig);
+        
+        // Processing config
+        ApplicationConfig.ProcessingConfig processingConfig = new ApplicationConfig.ProcessingConfig();
+        processingConfig.setTempDirectory(System.getProperty("java.io.tmpdir") + "/manusmith-shell");
+        processingConfig.setMaxFileSizeMB(50);
+        
+        ApplicationConfig.ProcessingConfig.BackupConfig backupConfig = new ApplicationConfig.ProcessingConfig.BackupConfig();
+        backupConfig.setEnabled(true);
+        backupConfig.setDirectory(System.getProperty("user.home") + "/.manusmith-shell/backups");
+        backupConfig.setRetentionDays(30);
+        processingConfig.setBackup(backupConfig);
+        
+        defaultConfig.setProcessing(processingConfig);
+        
+        // Performance config
+        ApplicationConfig.PerformanceConfig performanceConfig = new ApplicationConfig.PerformanceConfig();
+        performanceConfig.setAsyncProcessing(true);
+        performanceConfig.setThreadPoolSize(4);
+        performanceConfig.setMaxConcurrentOperations(2);
+        defaultConfig.setPerformance(performanceConfig);
+        
+        // Metrics config
+        ApplicationConfig.MetricsConfig metricsConfig = new ApplicationConfig.MetricsConfig();
+        metricsConfig.setEnabled(true);
+        ApplicationConfig.MetricsConfig.JmxConfig jmxConfig = new ApplicationConfig.MetricsConfig.JmxConfig();
+        jmxConfig.setEnabled(true);
+        jmxConfig.setDomain("org.manusmith.shell");
+        metricsConfig.setJmx(jmxConfig);
+        defaultConfig.setMetrics(metricsConfig);
+        
+        // Security config
+        ApplicationConfig.SecurityConfig securityConfig = new ApplicationConfig.SecurityConfig();
+        defaultConfig.setSecurity(securityConfig);
+        
+        return defaultConfig;
     }
 }
