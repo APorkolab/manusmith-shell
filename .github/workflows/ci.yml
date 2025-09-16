@@ -43,25 +43,42 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
+    - name: Checkout ManuSmith Engine
+      uses: actions/checkout@v4
+      with:
+        repository: APorkolab/manusmith-engine
+        path: manusmith-engine
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: Install ManuSmith Engine Dependency
       run: |
-        git clone https://github.com/APorkolab/manusmith-engine.git
         cd manusmith-engine
         mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
         echo "✅ ManuSmith Engine ${{ env.ENGINE_VERSION }} installed"
 
     - name: Run Tests
+      env:
+        JAVA_OPTS: "-Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw"
       run: |
-        mvn clean test
+        mvn clean test -Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw
         echo "✅ All tests completed"
+        
+    - name: Verify Test Reports
+      if: always()
+      run: |
+        echo "📋 Checking for test report files:"
+        find . -name "*.xml" -path "*/surefire-reports/*" -ls || echo "No surefire-reports XML files found"
+        find . -name "TEST-*.xml" -ls || echo "No TEST-*.xml files found"
+        ls -la target/surefire-reports/ || echo "No surefire-reports directory found"
 
     - name: Generate Test Reports
       uses: dorny/test-reporter@v1
-      if: success() || failure()
+      if: always() && hashFiles('**/target/surefire-reports/*.xml') != ''
       with:
         name: Unit Test Results
-        path: target/surefire-reports/*.xml
+        path: '**/target/surefire-reports/*.xml'
         reporter: java-junit
+        fail-on-error: false
 
   build-cross-platform:
     name: Build Native Packages
@@ -100,10 +117,16 @@ jobs:
         key: ${{ matrix.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ matrix.os }}-m2
 
+    - name: Checkout ManuSmith Engine
+      uses: actions/checkout@v4
+      with:
+        repository: APorkolab/manusmith-engine
+        path: manusmith-engine
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: Install ManuSmith Engine Dependency
       shell: bash
       run: |
-        git clone https://github.com/APorkolab/manusmith-engine.git
         cd manusmith-engine
         mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
         echo "✅ ManuSmith Engine installed for ${{ matrix.platform }}"
@@ -259,9 +282,15 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
+    - name: Checkout ManuSmith Engine
+      uses: actions/checkout@v4
+      with:
+        repository: APorkolab/manusmith-engine
+        path: manusmith-engine
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: Install ManuSmith Engine Dependency
       run: |
-        git clone https://github.com/APorkolab/manusmith-engine.git
         cd manusmith-engine
         mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
         echo "✅ ManuSmith Engine installed for security scan"
