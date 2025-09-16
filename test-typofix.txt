@@ -1,0 +1,7 @@
+Ez egy teszt szöveg "idézőjelekkel" és 'aposztrófokkal'... Itt van egy -- gondolatjel is.
+
+Shunn formátum tesztje:
+***
+Ez egy új jelenet.
+---
+És ez is egy másik jelenet.

@@ -6,16 +6,16 @@
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.manusmith.shell.controller.CoverLetterController" spacing="10" style="-fx-padding:12;">
   <GridPane hgap="8" vgap="8">
     <children>
-      <Label text="Market"/>
+      <Label text="%label.market"/>
       <TextField fx:id="tfMarket" GridPane.columnIndex="1"/>
-      <Label text="Genre" GridPane.rowIndex="1"/>
+      <Label text="%label.genre" GridPane.rowIndex="1"/>
       <TextField fx:id="tfGenre" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-      <Label text="SimSub" GridPane.rowIndex="2"/>
+      <Label text="%label.simsub" GridPane.rowIndex="2"/>
       <CheckBox fx:id="cbSimSub" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
     </children>
   </GridPane>
   <HBox spacing="10" alignment="CENTER">
-    <Button text="Generate &amp; Save to .txt" onAction="#onGenerate" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-    <Button text="Copy to Clipboard" onAction="#onCopyToClipboard" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+    <Button text="%label.generate_and_save" onAction="#onGenerate" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+    <Button text="%label.copy_to_clipboard" onAction="#onCopyToClipboard" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
   </HBox>
 </VBox>

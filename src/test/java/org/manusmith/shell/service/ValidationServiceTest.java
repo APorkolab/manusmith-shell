@@ -10,6 +10,8 @@ import org.manusmith.shell.dto.FormattingPrefs;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,12 +19,14 @@ class ValidationServiceTest {
 
     private ValidationService validationService;
     private File validFile;
+    private ResourceBundle messages;
 
     @BeforeEach
     void setUp(@TempDir File tempDir) throws IOException {
         validationService = new ValidationService();
         validFile = new File(tempDir, "input.docx");
         assertTrue(validFile.createNewFile(), "Failed to create temp file for test");
+        messages = ResourceBundle.getBundle("i18n.messages", Locale.getDefault());
     }
 
     private ConvertRequest createValidRequest() {
@@ -43,7 +47,7 @@ class ValidationServiceTest {
         ConvertRequest request = new ConvertRequest(new File("nonexistent.docx"), new File("out.docx"), createValidRequest().authorMeta(), createValidRequest().formattingPrefs());
         List<String> errors = validationService.validate(request);
         assertEquals(1, errors.size());
-        assertTrue(errors.get(0).contains("Input file does not exist"));
+        assertTrue(errors.get(0).contains(messages.getString("validation.input_file_missing").substring(0, 10)));
     }
 
     @Test
@@ -52,7 +56,7 @@ class ValidationServiceTest {
         ConvertRequest request = new ConvertRequest(validFile, new File("out.docx"), meta, createValidRequest().formattingPrefs());
         List<String> errors = validationService.validate(request);
         assertEquals(1, errors.size());
-        assertTrue(errors.get(0).contains("Author name is required"));
+        assertTrue(errors.get(0).contains(messages.getString("validation.author_name_required").substring(0, 10)));
     }
 
     @Test
@@ -61,7 +65,7 @@ class ValidationServiceTest {
         ConvertRequest request = new ConvertRequest(validFile, new File("out.docx"), meta, createValidRequest().formattingPrefs());
         List<String> errors = validationService.validate(request);
         assertEquals(1, errors.size());
-        assertTrue(errors.get(0).contains("Manuscript title is required"));
+        assertTrue(errors.get(0).contains(messages.getString("validation.manuscript_title_required").substring(0, 10)));
     }
 
     @Test

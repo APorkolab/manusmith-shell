@@ -9,8 +9,8 @@ import org.manusmith.shell.service.SharedDataService;
 import org.manusmith.shell.service.StatusService;
 import org.manusmith.shell.util.Fx;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,8 +50,10 @@ public class CoverLetterController {
     @FXML
     private void onCopyToClipboard() {
         generateCoverLetterText().ifPresent(coverLetter -> {
-            StringSelection stringSelection = new StringSelection(coverLetter);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(coverLetter);
+            clipboard.setContent(content);
             StatusService.getInstance().updateStatus("Cover letter copied to clipboard.");
             Fx.alert("Success", "Cover letter text copied to clipboard.");
         });
