@@ -617,8 +617,12 @@
                     <option>-Dapple.laf.useScreenMenuBar=true</option>
                     <option>-Xdock:name=ManuSmith Shell</option>
                     <option>-Dcom.apple.macos.useScreenMenuBar=true</option>
-                    <option>-Dprism.order=sw</option>
-                    <option>-Djavafx.animation.fullspeed=true</option>
+                    <option>-Dprism.order=d3d,es2,sw</option>
+                    <option>-Dprism.verbose=false</option>
+                    <option>-Djavafx.animation.fullspeed=false</option>
+                    <option>-Dprism.allowhidpi=false</option>
+                    <option>-Dprism.maxvram=512m</option>
+                    <option>-Dglass.accessible.force=false</option>
                   </javaOptions>
                 </configuration>
               </execution>
