@@ -175,11 +175,17 @@ jobs:
       shell: cmd
       run: |
         echo 🚀 Building Windows package inline...
-        echo Step 1: Clean previous build
-        mvn clean -q
         
-        echo Step 2: Compile and package
-        mvn compile package -DskipTests -Dspotbugs.skip=true -q
+        echo Step 1: Clean previous build
+        call mvn clean -q
+        if %ERRORLEVEL% NEQ 0 (
+          echo ❌ Maven clean failed
+          exit /b 1
+        )
+        echo ✅ Maven clean completed
+        
+        echo Step 2: Compile and package with dependencies
+        call mvn compile package -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -q
         if %ERRORLEVEL% NEQ 0 (
           echo ❌ Maven package failed
           exit /b 1
@@ -188,35 +194,56 @@ jobs:
         
         echo Step 3: List target directory
         if exist "target" (
-          echo Target directory contents:
+          echo ✅ Target directory found, contents:
           dir target
         ) else (
-          echo ❌ No target directory created
+          echo ❌ No target directory created - Maven build may have failed silently
           exit /b 1
         )
         
-        echo Step 4: Check for JAR files
-        dir target\*.jar
-        
-        echo Step 5: Create obfuscated JAR
-        if exist "target\manusmith-shell-2.0.0-jar-with-dependencies.jar" (
-          echo ✅ Fat JAR found, copying as obfuscated
-          copy target\manusmith-shell-2.0.0-jar-with-dependencies.jar target\manusmith-shell-2.0.0-obfuscated.jar
+        echo Step 4: Check for JAR files specifically
+        echo Looking for JAR files in target:
+        if exist "target\*.jar" (
+          dir target\*.jar
         ) else (
-          echo ❌ Fat JAR not found
+          echo ❌ No JAR files found in target directory
           exit /b 1
         )
         
-        echo Step 6: Create dist directory
-        mkdir target\dist 2>nul
-        copy target\manusmith-shell-2.0.0-obfuscated.jar target\dist\
+        echo Step 5: Create obfuscated JAR copy
+        if exist "target\manusmith-shell-2.0.0-jar-with-dependencies.jar" (
+          echo ✅ Fat JAR found, copying as obfuscated version
+          copy "target\manusmith-shell-2.0.0-jar-with-dependencies.jar" "target\manusmith-shell-2.0.0-obfuscated.jar"
+          if %ERRORLEVEL% NEQ 0 (
+            echo ❌ Failed to copy JAR as obfuscated version
+            exit /b 1
+          )
+          echo ✅ Obfuscated JAR created successfully
+        ) else (
+          echo ❌ Fat JAR not found - expected: target\manusmith-shell-2.0.0-jar-with-dependencies.jar
+          echo Available files in target:
+          dir target
+          exit /b 1
+        )
+        
+        echo Step 6: Create dist directory and copy artifacts
+        if not exist "target\dist" mkdir "target\dist"
+        copy "target\manusmith-shell-2.0.0-obfuscated.jar" "target\dist\"
+        if %ERRORLEVEL% NEQ 0 (
+          echo ❌ Failed to copy obfuscated JAR to dist directory
+          exit /b 1
+        )
+        echo ✅ Artifacts copied to dist directory
         
         echo Step 7: Verify final artifacts
         if exist "target\dist\manusmith-shell-2.0.0-obfuscated.jar" (
-          echo 🎉 Windows build completed successfully
-          dir target\dist
+          echo 🎉 Windows build completed successfully!
+          echo Final dist directory contents:
+          dir "target\dist"
         ) else (
-          echo ❌ Final artifact creation failed
+          echo ❌ Final artifact verification failed
+          echo Target directory contents:
+          dir target
           exit /b 1
         )
 
