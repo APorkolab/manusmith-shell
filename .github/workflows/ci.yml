@@ -53,7 +53,8 @@ jobs:
     - name: Install ManuSmith Engine Dependency
       run: |
         cd manusmith-engine
-        mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
+        mvn clean package -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Dmaven.javadoc.skip=true -Dmaven.source.skip=true -q
+        mvn install:install-file -Dfile=target/manusmith-engine-plugin-2.0.0.jar -DgroupId=org.manusmith -DartifactId=manusmith-engine-plugin -Dversion=2.0.0 -Dpackaging=jar -q
         echo "✅ ManuSmith Engine ${{ env.ENGINE_VERSION }} installed"
 
     - name: Run Tests
@@ -128,7 +129,8 @@ jobs:
       shell: bash
       run: |
         cd manusmith-engine
-        mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
+        mvn clean package -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Dmaven.javadoc.skip=true -Dmaven.source.skip=true -q
+        mvn install:install-file -Dfile=target/manusmith-engine-plugin-2.0.0.jar -DgroupId=org.manusmith -DartifactId=manusmith-engine-plugin -Dversion=2.0.0 -Dpackaging=jar -q
         echo "✅ ManuSmith Engine installed for ${{ matrix.platform }}"
 
     - name: Install WiX Toolset (Windows only)
@@ -292,7 +294,8 @@ jobs:
     - name: Install ManuSmith Engine Dependency
       run: |
         cd manusmith-engine
-        mvn clean install -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Djpackage.skip=true -q
+        mvn clean package -DskipTests -Dspotbugs.skip=true -Ddependency-check.skip=true -Dmaven.javadoc.skip=true -Dmaven.source.skip=true -q
+        mvn install:install-file -Dfile=target/manusmith-engine-plugin-2.0.0.jar -DgroupId=org.manusmith -DartifactId=manusmith-engine-plugin -Dversion=2.0.0 -Dpackaging=jar -q
         echo "✅ ManuSmith Engine installed for security scan"
 
     - name: Run OWASP Dependency Check
