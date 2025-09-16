@@ -47,7 +47,11 @@ public class DocxProcessingService {
                     
                     int fontSize = -1;
                     try {
-                        fontSize = run.getFontSize();
+                        // Use getFontSizeAsDouble() for the newer API
+                        Double fontSizeDouble = run.getFontSizeAsDouble();
+                        if (fontSizeDouble != null) {
+                            fontSize = fontSizeDouble.intValue();
+                        }
                     } catch (Exception e) {
                         // Ignore if font size can't be retrieved
                     }
