@@ -1,0 +1,9 @@
+This is a test document to verify drag and drop functionality works correctly.
+
+It supports multiple file formats:
+- DOCX (Word documents) 
+- ODT (OpenDocument Text)
+- MD (Markdown files)
+- TXT (Plain text files)
+
+This particular file is in TXT format, which should be supported by the ManuSmith Shell application for processing and conversion to Shunn manuscript format.

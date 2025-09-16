@@ -34,12 +34,11 @@
           <content><fx:include source="tab-quickconvert.fxml"/></content>
         </Tab>
         
-        <!-- Future features -->
-        <Tab text="%label.typofix" closable="false" disable="true">
+        <Tab text="%label.typofix" closable="false">
           <content><fx:include source="tab-typofix.fxml"/></content>
         </Tab>
         
-        <Tab text="%label.cover_letter" closable="false" disable="true">
+        <Tab text="%label.cover_letter" closable="false">
           <content><fx:include source="tab-coverletter.fxml"/></content>
         </Tab>
       </tabs>

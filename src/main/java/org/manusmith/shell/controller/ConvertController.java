@@ -167,13 +167,17 @@ public class ConvertController {
     
     private void handleDragOver(DragEvent event) {
         if (event.getGestureSource() != dragDropArea && event.getDragboard().hasFiles()) {
-            // Check if the dragged files contain .docx files
+            // Check if the dragged files contain supported formats
             Dragboard db = event.getDragboard();
             List<File> files = db.getFiles();
-            boolean hasDocxFile = files.stream()
-                    .anyMatch(file -> file.getName().toLowerCase().endsWith(".docx"));
+            boolean hasSupportedFile = files.stream()
+                    .anyMatch(file -> {
+                        String fileName = file.getName().toLowerCase();
+                        return fileName.endsWith(".docx") || fileName.endsWith(".odt") || 
+                               fileName.endsWith(".md") || fileName.endsWith(".txt");
+                    });
             
-            if (hasDocxFile) {
+            if (hasSupportedFile) {
                 event.acceptTransferModes(TransferMode.COPY);
             }
         }
@@ -186,13 +190,17 @@ public class ConvertController {
         
         if (db.hasFiles()) {
             List<File> files = db.getFiles();
-            // Find the first .docx file
-            Optional<File> docxFile = files.stream()
-                    .filter(file -> file.getName().toLowerCase().endsWith(".docx"))
+            // Find the first supported file
+            Optional<File> supportedFile = files.stream()
+                    .filter(file -> {
+                        String fileName = file.getName().toLowerCase();
+                        return fileName.endsWith(".docx") || fileName.endsWith(".odt") || 
+                               fileName.endsWith(".md") || fileName.endsWith(".txt");
+                    })
                     .findFirst();
                     
-            if (docxFile.isPresent()) {
-                File file = docxFile.get();
+            if (supportedFile.isPresent()) {
+                File file = supportedFile.get();
                 tfInput.setText(file.getAbsolutePath());
                 StatusService.getInstance().updateStatus("Input file selected via drag & drop: " + file.getName());
                 
@@ -203,7 +211,7 @@ public class ConvertController {
                 }
                 success = true;
             } else {
-                StatusService.getInstance().updateStatus("Please drop a .docx file.");
+                StatusService.getInstance().updateStatus("Please drop a supported file (.docx, .odt, .md, .txt).");
             }
         }
         

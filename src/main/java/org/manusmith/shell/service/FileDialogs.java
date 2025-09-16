@@ -10,11 +10,33 @@ public class FileDialogs {
 
     private static final FileChooser.ExtensionFilter DOCX_FILTER =
             new FileChooser.ExtensionFilter("Word Document (*.docx)", "*.docx");
+    
+    private static final FileChooser.ExtensionFilter ALL_SUPPORTED_FILTER =
+            new FileChooser.ExtensionFilter("All Supported Documents (*.docx, *.odt, *.md, *.txt)", "*.docx", "*.odt", "*.md", "*.txt");
+    
+    private static final FileChooser.ExtensionFilter ODT_FILTER =
+            new FileChooser.ExtensionFilter("OpenDocument Text (*.odt)", "*.odt");
+    
+    private static final FileChooser.ExtensionFilter MARKDOWN_FILTER =
+            new FileChooser.ExtensionFilter("Markdown (*.md)", "*.md");
+    
+    private static final FileChooser.ExtensionFilter TEXT_FILTER =
+            new FileChooser.ExtensionFilter("Text File (*.txt)", "*.txt");
+    
+    private static final FileChooser.ExtensionFilter ALL_FILES_FILTER =
+            new FileChooser.ExtensionFilter("All Files (*.*)", "*.*");
 
     public Optional<File> showOpenDocxDialog(Window owner) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Manuscript");
-        fileChooser.getExtensionFilters().add(DOCX_FILTER);
+        fileChooser.getExtensionFilters().addAll(
+                ALL_SUPPORTED_FILTER,
+                DOCX_FILTER,
+                ODT_FILTER,
+                MARKDOWN_FILTER,
+                TEXT_FILTER,
+                ALL_FILES_FILTER
+        );
         File file = fileChooser.showOpenDialog(owner);
         return Optional.ofNullable(file);
     }
