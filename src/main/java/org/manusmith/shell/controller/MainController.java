@@ -82,4 +82,13 @@ public class MainController {
             Fx.error("Error", "Could not open preferences window.");
         }
     }
+    
+    @FXML
+    private void onToggleTheme() {
+        // Toggle between light and dark theme
+        org.manusmith.shell.service.ThemeService.getInstance().toggleTheme(
+            ((Stage) languageSelector.getScene().getWindow()).getScene()
+        );
+        StatusService.getInstance().updateStatus("Theme toggled.");
+    }
 }

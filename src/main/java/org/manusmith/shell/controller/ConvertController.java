@@ -139,4 +139,11 @@ public class ConvertController {
 
         new Thread(generationTask).start();
     }
+    
+    @FXML
+    private void onPreview() {
+        // Preview functionality - currently placeholder
+        StatusService.getInstance().updateStatus("Preview feature coming soon.");
+        Fx.alert("Preview", "Preview functionality will be available in future versions.");
+    }
 }

@@ -572,7 +572,12 @@
                   <javaOptions>
                     <option>-Xmx2048m</option>
                     <option>-Djava.awt.headless=false</option>
+                    <option>-Dapple.awt.UIElement=false</option>
+                    <option>-Dapple.laf.useScreenMenuBar=true</option>
+                    <option>-Xdock:name=ManuSmith Shell</option>
+                    <option>-Dcom.apple.macos.useScreenMenuBar=true</option>
                     <option>--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</option>
+                    <option>--add-exports=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</option>
                   </javaOptions>
                 </configuration>
               </execution>

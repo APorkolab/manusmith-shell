@@ -40,23 +40,41 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        System.out.println("JavaFX start() method called");
         setInstance(this);
         this.primaryStage = primaryStage;
-        primaryStage.setScene(loadScene());
-        primaryStage.show();
-
-        // Setup tray icon
-        // The engine bridge could be a singleton or managed by a DI framework later.
-        // For now, we create it here and pass it where needed.
-        EngineBridge engineBridge = new EngineBridge();
-        TrayIntegration tray = new TrayIntegration(primaryStage, engineBridge);
-        tray.setupTray();
+        
+        try {
+            System.out.println("Loading scene...");
+            Scene scene = loadScene();
+            primaryStage.setScene(scene);
+            System.out.println("Scene loaded and set");
+            
+            primaryStage.show();
+            System.out.println("Primary stage shown");
+        } catch (Exception e) {
+            System.err.println("Error in start method: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
 
         // Handle window close to hide to tray
         primaryStage.setOnCloseRequest(event -> {
             primaryStage.hide();
             event.consume(); // Consume the event to prevent the window from closing
         });
+        
+        // Setup tray icon after stage is shown
+        try {
+            System.out.println("Setting up tray integration...");
+            EngineBridge engineBridge = new EngineBridge();
+            TrayIntegration tray = new TrayIntegration(primaryStage, engineBridge);
+            tray.setupTray();
+            System.out.println("Tray integration setup completed");
+        } catch (Exception e) {
+            System.err.println("Warning: Could not setup tray integration: " + e.getMessage());
+            // Continue without tray - this is not critical for basic functionality
+        }
     }
 
     private static Scene loadScene() throws IOException {
@@ -88,6 +106,29 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
+        // Set macOS specific properties before JavaFX launch
+        if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+            System.setProperty("apple.awt.UIElement", "false");
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+            System.setProperty("java.awt.headless", "false");
+        }
+        
+        // Debug information
+        System.out.println("Starting ManuSmith Shell...");
+        System.out.println("OS: " + System.getProperty("os.name"));
+        System.out.println("Java version: " + System.getProperty("java.version"));
+        System.out.println("JavaFX available: " + isJavaFXAvailable());
+        
         launch(args);
+    }
+    
+    private static boolean isJavaFXAvailable() {
+        try {
+            Class.forName("javafx.application.Application");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }
