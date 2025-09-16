@@ -283,8 +283,7 @@ jobs:
         path: |
           target/dist/*.dmg
           target/dist/*.msi
-          target/dist/*.jar
-          target/*-obfuscated.jar
+          target/dist/*-obfuscated.jar
         retention-days: 90
         if-no-files-found: warn
 
