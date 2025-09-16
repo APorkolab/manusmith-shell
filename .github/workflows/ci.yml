@@ -90,12 +90,10 @@ jobs:
         include:
           - os: macos-latest
             platform: 'macOS'
-            build_script: './build-macos.sh'
             artifact_pattern: '*.dmg'
             artifact_name: 'ManuSmith-Shell-macOS'
           - os: windows-latest  
             platform: 'Windows'
-            build_script: 'build-windows.bat'
             artifact_pattern: '*.msi'
             artifact_name: 'ManuSmith-Shell-Windows'
     
@@ -139,12 +137,22 @@ jobs:
         choco install wixtoolset -y
         echo "✅ WiX Toolset installed"
 
-    - name: Build Native Package for ${{ matrix.platform }}
+    - name: Build Native Package for macOS
+      if: matrix.os == 'macos-latest'
       shell: bash
       run: |
-        echo "🚀 Building native installer for ${{ matrix.platform }}..."
-        ${{ matrix.build_script }}
-        echo "✅ Build completed for ${{ matrix.platform }}"
+        echo "🚀 Building native installer for macOS..."
+        chmod +x ./build-macos.sh
+        ./build-macos.sh
+        echo "✅ macOS build completed"
+    
+    - name: Build Native Package for Windows
+      if: matrix.os == 'windows-latest'
+      shell: cmd
+      run: |
+        echo 🚀 Building native installer for Windows...
+        .\build-windows.bat
+        echo ✅ Windows build completed
 
     - name: Upload Native Package
       uses: actions/upload-artifact@v4
@@ -156,13 +164,23 @@ jobs:
         retention-days: 90
         if-no-files-found: error
 
-    - name: Verify Package Creation
+    - name: Verify Package Creation (macOS)
+      if: matrix.os == 'macos-latest'
       shell: bash
       run: |
         echo "📦 Checking created packages:"
         ls -la target/dist/ || echo "No dist directory"
         ls -la target/*.jar || echo "No JAR files"
-        echo "✅ Package verification completed"
+        echo "✅ macOS package verification completed"
+    
+    - name: Verify Package Creation (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: cmd
+      run: |
+        echo 📦 Checking created packages:
+        dir target\dist\ 2>nul || echo No dist directory
+        dir target\*.jar 2>nul || echo No JAR files
+        echo ✅ Windows package verification completed
 
   release:
     name: Create Release with Native Installers
