@@ -55,7 +55,7 @@ echo "🔐 Starting ProGuard obfuscation..."
 
 # Create ProGuard configuration
 cat > proguard-config.pro << 'EOF'
--injars target/manusmith-shell-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+-injars target/manusmith-shell-2.0.0-jar-with-dependencies.jar
 -outjars target/manusmith-shell-2.0.0-obfuscated.jar
 
 -libraryjars <java.home>/jmods/java.base.jmod(!**.jar;!module-info.class)
