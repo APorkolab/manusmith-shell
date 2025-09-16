@@ -259,6 +259,13 @@
       <version>${javafx.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- TestFX Monocle for headless CI/CD testing -->
+    <dependency>
+      <groupId>org.testfx</groupId>
+      <artifactId>openjfx-monocle</artifactId>
+      <version>21.0.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -286,18 +293,22 @@
         <configuration>
           <useModulePath>false</useModulePath>
           <systemPropertyVariables>
-            <java.awt.headless>false</java.awt.headless>
-            <testfx.robot>awt</testfx.robot>
-            <testfx.headless>false</testfx.headless>
+            <testfx.robot>glass</testfx.robot>
+            <testfx.headless>true</testfx.headless>
             <prism.order>sw</prism.order>
             <prism.text>t2k</prism.text>
             <prism.lcdtext>false</prism.lcdtext>
             <prism.subpixeltext>false</prism.subpixeltext>
+            <glass.platform>Monocle</glass.platform>
+            <monocle.platform>Headless</monocle.platform>
+            <java.awt.headless>true</java.awt.headless>
           </systemPropertyVariables>
           <argLine>
             --add-opens javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
             --add-opens javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
             --add-exports javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+            --add-opens javafx.graphics/com.sun.glass.ui.monocle=ALL-UNNAMED
+            --add-exports javafx.graphics/com.sun.glass.ui.monocle=ALL-UNNAMED
           </argLine>
         </configuration>
       </plugin>
