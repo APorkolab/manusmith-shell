@@ -347,6 +347,7 @@
         <configuration>
           <mainClass>org.manusmith.shell.MainApp</mainClass>
           <launcher>ManuSmith</launcher>
+          <commandlineArgs>-Djava.awt.headless=false -Dprism.order=sw -Dprism.verbose=true -Djavafx.animation.fullspeed=true</commandlineArgs>
         </configuration>
       </plugin>
       
