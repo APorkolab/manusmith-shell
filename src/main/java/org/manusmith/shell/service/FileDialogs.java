@@ -42,10 +42,17 @@ public class FileDialogs {
     }
 
     public Optional<File> showSaveDocxDialog(Window owner, String initialFileName) {
+        return showSaveDocxDialog(owner, initialFileName, null);
+    }
+    
+    public Optional<File> showSaveDocxDialog(Window owner, String initialFileName, File initialDirectory) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
         fileChooser.getExtensionFilters().add(DOCX_FILTER);
         fileChooser.setInitialFileName(initialFileName);
+        if (initialDirectory != null && initialDirectory.exists() && initialDirectory.isDirectory()) {
+            fileChooser.setInitialDirectory(initialDirectory);
+        }
         File file = fileChooser.showSaveDialog(owner);
         return Optional.ofNullable(file);
     }

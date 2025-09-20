@@ -243,6 +243,17 @@ public class ConfigurationService {
         
         // Security config
         ApplicationConfig.SecurityConfig securityConfig = new ApplicationConfig.SecurityConfig();
+        
+        ApplicationConfig.SecurityConfig.FileAccessConfig fileAccessConfig = new ApplicationConfig.SecurityConfig.FileAccessConfig();
+        fileAccessConfig.setRestrictToUserHome(false);
+        fileAccessConfig.setBlockedExtensions(java.util.List.of("exe", "bat", "sh", "cmd"));
+        securityConfig.setFileAccess(fileAccessConfig);
+        
+        ApplicationConfig.SecurityConfig.ValidationConfig validationConfig = new ApplicationConfig.SecurityConfig.ValidationConfig();
+        validationConfig.setMaxPathLength(260);
+        validationConfig.setSanitizeFilenames(true);
+        securityConfig.setValidation(validationConfig);
+        
         defaultConfig.setSecurity(securityConfig);
         
         return defaultConfig;

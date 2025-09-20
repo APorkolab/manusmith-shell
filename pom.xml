@@ -378,6 +378,7 @@
         <configuration>
           <mainClass>org.manusmith.shell.MainApp</mainClass>
           <launcher>ManuSmith</launcher>
+          <runtimePathOption>MODULEPATH</runtimePathOption>
           <commandlineArgs>-Djava.awt.headless=false -Dprism.order=sw -Dprism.verbose=true -Djavafx.animation.fullspeed=true</commandlineArgs>
         </configuration>
       </plugin>
@@ -418,14 +419,15 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.6.0</version>
         <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
+          <descriptors>
+            <descriptor>src/assembly/jar-with-dependencies.xml</descriptor>
+          </descriptors>
           <archive>
             <manifest>
               <mainClass>org.manusmith.shell.MainApp</mainClass>
             </manifest>
           </archive>
+          <finalName>${project.artifactId}-${project.version}-jar-with-dependencies</finalName>
         </configuration>
         <executions>
           <execution>
@@ -629,7 +631,6 @@
                   <macPackageIdentifier>org.manusmith.shell</macPackageIdentifier>
                   <macPackageSigningPrefix>org.manusmith</macPackageSigningPrefix>
                   <macSign>false</macSign>
-                  <macBundleName>ManuSmith Shell</macBundleName>
                   <macAppCategory>public.app-category.productivity</macAppCategory>
                   <javaOptions>
                     <option>-Xmx2048m</option>
@@ -644,6 +645,8 @@
                     <option>-Dprism.allowhidpi=false</option>
                     <option>-Dprism.maxvram=512m</option>
                     <option>-Dglass.accessible.force=false</option>
+                    <option>--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</option>
+                    <option>--add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED</option>
                   </javaOptions>
                 </configuration>
               </execution>

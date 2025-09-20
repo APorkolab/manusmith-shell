@@ -57,6 +57,7 @@ public class ConvertController {
         this.preferencesService = new PreferencesService();
         loadPreferences();
         setupDragAndDrop();
+        setupAutoOutputUpdate();
     }
 
     private void loadPreferences() {
@@ -77,21 +78,26 @@ public class ConvertController {
         file.ifPresent(f -> {
             tfInput.setText(f.getAbsolutePath());
             StatusService.getInstance().updateStatus("Input file selected: " + f.getName());
-            if (Strings.isBlank(tfOutput.getText())) {
-                String outputName = f.getName().replaceFirst("[.][^.]+$", "") + " (Shunn).docx";
-                tfOutput.setText(new File(f.getParent(), outputName).getAbsolutePath());
-            }
+            generateOutputFilename(f);
         });
     }
 
     @FXML
     private void onBrowseOutput() {
         StatusService.getInstance().updateStatus("Opening file browser for output...");
-        String initialName = "output.docx";
-        if (!Strings.isBlank(tfTitle.getText()) && !Strings.isBlank(tfAuthor.getText())) {
-            initialName = tfAuthor.getText() + " - " + tfTitle.getText() + ".docx";
+        String initialName = generateDefaultOutputName();
+        
+        // Set initial directory to input file's directory if available
+        String inputPath = tfInput.getText();
+        File initialDir = null;
+        if (!Strings.isBlank(inputPath)) {
+            File inputFile = new File(inputPath);
+            if (inputFile.exists()) {
+                initialDir = inputFile.getParentFile();
+            }
         }
-        Optional<File> file = fileDialogs.showSaveDocxDialog(tfOutput.getScene().getWindow(), initialName);
+        
+        Optional<File> file = fileDialogs.showSaveDocxDialog(tfOutput.getScene().getWindow(), initialName, initialDir);
         file.ifPresent(f -> {
             tfOutput.setText(f.getAbsolutePath());
             StatusService.getInstance().updateStatus("Output file location selected: " + f.getName());
@@ -204,11 +210,8 @@ public class ConvertController {
                 tfInput.setText(file.getAbsolutePath());
                 StatusService.getInstance().updateStatus("Input file selected via drag & drop: " + file.getName());
                 
-                // Auto-generate output filename if not set
-                if (Strings.isBlank(tfOutput.getText())) {
-                    String outputName = file.getName().replaceFirst("[.][^.]+$", "") + " (Shunn).docx";
-                    tfOutput.setText(new File(file.getParent(), outputName).getAbsolutePath());
-                }
+                // Auto-generate output filename
+                generateOutputFilename(file);
                 success = true;
             } else {
                 StatusService.getInstance().updateStatus("Please drop a supported file (.docx, .odt, .md, .txt).");
@@ -227,5 +230,82 @@ public class ConvertController {
         // Preview functionality - currently placeholder
         StatusService.getInstance().updateStatus("Preview feature coming soon.");
         Fx.alert("Preview", "Preview functionality will be available in future versions.");
+    }
+    
+    private void setupAutoOutputUpdate() {
+        // Add listeners to author and title fields to auto-update output filename
+        tfAuthor.textProperty().addListener((observable, oldValue, newValue) -> updateOutputFilename());
+        tfTitle.textProperty().addListener((observable, oldValue, newValue) -> updateOutputFilename());
+    }
+    
+    private void generateOutputFilename(File inputFile) {
+        if (inputFile == null) {
+            return;
+        }
+        
+        String outputName = generateDefaultOutputName();
+        
+        // Mindig a bemeneti fájl könyvtárát használjuk
+        File outputFile = new File(inputFile.getParent(), outputName);
+        tfOutput.setText(outputFile.getAbsolutePath());
+    }
+    
+    private void updateOutputFilename() {
+        String inputPath = tfInput.getText();
+        if (!Strings.isBlank(inputPath)) {
+            File inputFile = new File(inputPath);
+            if (inputFile.exists()) {
+                generateOutputFilename(inputFile);
+            } else {
+                // Ha nincs input fájl, csak a nevet frissítjük ugyanabban a könyvtárban
+                String currentOutputPath = tfOutput.getText();
+                if (!Strings.isBlank(currentOutputPath)) {
+                    File currentOutputFile = new File(currentOutputPath);
+                    String newName = generateDefaultOutputName();
+                    File newOutputFile = new File(currentOutputFile.getParent(), newName);
+                    tfOutput.setText(newOutputFile.getAbsolutePath());
+                }
+            }
+        }
+    }
+    
+    private String generateDefaultOutputName() {
+        String author = tfAuthor.getText();
+        String title = tfTitle.getText();
+        
+        String outputName;
+        if (!Strings.isBlank(author) && !Strings.isBlank(title)) {
+            // Format: "Szerző - Cím.docx"
+            outputName = sanitizeFilename(author + " - " + title + ".docx");
+        } else if (!Strings.isBlank(title)) {
+            // Format: "Cím.docx"
+            outputName = sanitizeFilename(title + ".docx");
+        } else if (!Strings.isBlank(author)) {
+            // Format: "Szerző.docx"
+            outputName = sanitizeFilename(author + ".docx");
+        } else {
+            // Fallback: default name
+            String inputPath = tfInput.getText();
+            if (!Strings.isBlank(inputPath)) {
+                File inputFile = new File(inputPath);
+                String baseName = inputFile.getName().replaceFirst("[.][^.]+$", "");
+                outputName = sanitizeFilename(baseName + " (Shunn).docx");
+            } else {
+                outputName = "output.docx";
+            }
+        }
+        
+        return outputName;
+    }
+    
+    private String sanitizeFilename(String filename) {
+        if (filename == null) {
+            return "output.docx";
+        }
+        
+        // Remove or replace invalid filename characters
+        return filename.replaceAll("[<>:\"/\\|?*]", "_")
+                      .replaceAll("\s+", " ")
+                      .trim();
     }
 }
